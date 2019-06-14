@@ -1,0 +1,12 @@
+{
+    "name": "user/d_graphql",
+    "authors": [
+        {
+            "name": "Alexandr Krasnij",
+            "email": "php4.drvn@gmail.com"
+        }
+    ],
+    "require": {
+        "youshido/graphql": "^1.5"
+    }
+}
