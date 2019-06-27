@@ -1,0 +1,62 @@
+{
+    "accountLogin": "common/account/login",
+    "accountLogout": "common/account/logout",
+    "accountRegister": "common/account/register",
+    "accountEdit": "common/account/edit",
+    "accountEditPassword": "common/account/editPassword",
+    "accountCheckLogged": "common/account/isLogged",
+    "accountAddressList": "common/account/addressList",
+    "accountAddress": "common/account/address",
+    "accountAddAddress": "common/account/addAddress",
+    "accountEditAddress": "common/account/editAddress",
+    "accountRemoveAddress": "common/account/removeAddress",
+
+    "uploadFile": "common/file/upload",
+
+    "countriesList": "common/country/getList",
+    "country": "common/country/get",
+
+    "zonesList": "common/zone/getList",
+    "zone": "common/zone/get",
+
+    "categoryBlog": "blog/category/get",
+    "categoriesBlogList": "blog/category/getList",
+
+    "post": "blog/post/get",
+    "postsList": "blog/post/getList",
+    "addBlogPostReview": "blog/review/add",
+
+    "checkoutLink": "store/checkout/link",
+
+    "cart": "store/cart/get",
+    "addToCart": "store/cart/add",
+    "updateCart": "store/cart/update",
+    "removeCart": "store/cart/remove",
+
+    "category": "store/category/get",
+    "categoriesList": "store/category/getList",
+
+    "compare": "store/compare/get",
+    "addToCompare": "store/compare/add",
+    "removeCompare": "store/compare/remove",
+
+    "currency": "store/currency/get",
+    "editCurrency": "store/currency/edit",
+
+    "language": "common/language/get",
+    "editLanguage": "common/language/edit",
+
+    "page": "common/page/get",
+    "pagesList": "common/page/getList",
+
+    "productsList": "store/product/getList",
+    "product": "store/product/get",
+    "addReview": "store/review/add",
+    
+    "wishlist": "store/wishlist/getList",
+    "addToWishlist": "store/wishlist/add",
+    "removeWishlist": "store/wishlist/remove",
+
+    "contactSend": "common/contact/send",
+    "contact": "common/contact/get"
+}
