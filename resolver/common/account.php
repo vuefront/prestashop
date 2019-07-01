@@ -1,203 +1,218 @@
 <?php
 
-use \Magento\Framework\App\ObjectManager;
+use PrestaShop\PrestaShop\Adapter\ServiceLocator;
 
 class ResolverCommonAccount extends Resolver
 {
     public function login($args)
     {
-        // $objectManager =ObjectManager::getInstance();
+        $customer = new Customer();
+        $authentication = $customer->getByEmail(
+            $args["email"],
+            $args["password"]
+        );
 
-        // $customerModel = $objectManager->get('\Magento\Customer\Model\Customer');
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
-        // $customerModel->setWebsiteId($this->store->getWebsiteId());
-        // $customer = $customerModel->loadByEmail($args["email"]);
+        if (isset($authentication->active) && !$authentication->active) {
+            throw new Exception('Your account isn\'t available at this time, please contact us');
+        } elseif (!$authentication || !$customer->id || $customer->is_guest) {
+            throw new Exception('Authentication failed.');
+        } else {
+            $this->context->updateCustomer($customer);
 
-        // if ($customer->validatePassword($args["password"])) {
-        //     $customerSession->setCustomerAsLoggedIn($customer);
+            Hook::exec('actionAuthentication', ['customer' => $this->context->customer]);
 
-        //     return $this->get($customer->getId());
-        // } else {
-        //     throw new Exception('Warning: No match for E-Mail Address and/or Password.');
-        // }
+            CartRule::autoRemoveFromCart($this->context);
+            CartRule::autoAddToCart($this->context);
+        }
+
+        return $this->get($customer->id);
     }
 
     public function logout($args)
     {
-        // $objectManager =ObjectManager::getInstance();
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
+        global $cookie;
 
-        // $customerSession->logout();
+        $cookie->logout();
 
-        // return array(
-        //     'status' => true
-        // );
+        return array(
+            'status' => true
+        );
     }
 
     public function register($args)
     {
-        // $customer = $args['customer'];
+        $customerData = $args['customer'];
 
-        // $objectManager =ObjectManager::getInstance();
-        // try {
-        //     $customerFactory = $objectManager->get('\Magento\Customer\Model\CustomerFactory');
-        //     $newCustomer = $customerFactory->create();
+        if ($this->context->customer->getByEmail($customerData['email'])) {
+            throw new Exception('Warning: E-Mail Address is already registered');
+        }
 
-        //     $newCustomer->setWebsiteId($this->store->getWebsiteId());
-        //     $newCustomer->setEmail($customer['email']);
-        //     $newCustomer->setFirstname($customer['firstName']);
-        //     $newCustomer->setLastname($customer['lastName']);
-        //     $newCustomer->setPassword($customer['password']);
-        //     $newCustomer->save();
+        $customer = new Customer();
 
-        //     return $this->get($newCustomer->getId());
-        // } catch (Exception $e) {
-        //     throw new Exception($e->getMessage());
-        // }
+        $customer->firstname = $customerData['firstName'];
+        $customer->lastname = $customerData['lastName'];
+        $customer->email = $customerData['email'];
+        $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
+
+        $customer->passwd = $crypto->hash($customerData['password']);
+        $customer->save();
+
+        return $this->get($customer->id);
     }
 
     public function edit($args)
     {
-        // $customerData = $args['customer'];
+        global $cookie;
 
-        // $objectManager =ObjectManager::getInstance();
+        $customerData = $args['customer'];
 
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
+        $this->context->customer->email = $customerData['email'];
+        $this->context->customer->firstname = $customerData['firstName'];
+        $this->context->customer->lastname = $customerData['lastName'];
 
-        // $customer = $customerSession->getCustomer();
+        if (!$this->context->customer->save()) {
+            throw new Exception("Update failed");
+        }
 
-        // $customer->setEmail($customerData['email']);
-        // $customer->setFirstname($customerData['firstName']);
-        // $customer->setLastname($customerData['lastName']);
-
-        // $customer->save();
-
-        // return $this->get($customer->getId());
+        return $this->get($cookie->id_customer);
     }
 
     public function editPassword($args)
     {
-        // $objectManager =ObjectManager::getInstance();
+        global $cookie;
 
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
+        $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
 
-        // $customer = $customerSession->getCustomer();
+        $this->context->customer->passwd = $crypto->hash($args['password']);
 
-        // $customer->setPassword($args['password']);
+        if (!$this->context->customer->save()) {
+            throw new Exception("Update failed");
+        }
 
-        // $customer->save();
-
-        // return $this->get($customer->getId());
+        return $this->get($cookie->id_customer);
     }
 
     public function get($user_id)
     {
-        // $objectManager =ObjectManager::getInstance();
+        $customer = new Customer($user_id);
 
-        // $customerFactory = $objectManager->get('\Magento\Customer\Api\CustomerRepositoryInterfaceFactory');
-        // $customerRepository = $customerFactory->create();
-        // $customer = $customerRepository->getById($user_id);
-
-        // return array(
-        //     'id' => $customer->getId(),
-        //     'email' => $customer->getEmail(),
-        //     'firstName' => $customer->getFirstname(),
-        //     'lastName' => $customer->getLastname(),
-        // );
+        return array(
+            'id' => $customer->id,
+            'email' => $customer->email,
+            'firstName' => $customer->firstname,
+            'lastName' => $customer->lastname
+        );
     }
 
     public function isLogged($args)
     {
-        // $objectManager =ObjectManager::getInstance();
+        $customer = array();
+        
+        global $cookie;
 
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
-
-        // $customer = array();
-
-        // if ($customerSession->isLoggedIn()) {
-        //     $customer = $this->get($customerSession->getCustomerId());
-        // }
+        if ($cookie->isLogged()) {
+            $customer = $this->get($cookie->id_customer);
+        }
 
         return array(
-            'status' => false
-            // 'customer' => $customer
+            'status' => $cookie->isLogged(),
+            'customer' => $customer
         );
     }
 
     public function address($args)
     {
-        // $this->load->model('common/address');
+        global $cookie;
+        $result = $this->context->customer->getSimpleAddress($args['id'], $cookie->id_lang);
 
-        // $result = $this->model_common_address->getAddress($args['id']);
-
-        // return array(
-        //     'id' => $args['id'],
-        //     'firstName' => $result['firstname'],
-        //     'lastName' => $result['lastname'],
-        //     'company' => $result['company'],
-        //     'address1' => $result['street'],
-        //     'address2' => '',
-        //     'zoneId' => $result['region_id'],
-        //     'zone' => $this->load->resolver('common/zone/get', array(
-        //         'id' => $result['region_id']
-        //     )),
-        //     'country' => $this->load->resolver('common/country/get', array(
-        //         'id' => $result['country_id']
-        //     )),
-        //     'countryId' => $result['country_id'],
-        //     'city' => $result['city'],
-        //     'zipcode' => $result['postcode']
-        // );
+        return array(
+            'id' => $args['id'],
+            'firstName' => $result['firstname'],
+            'lastName' => $result['lastname'],
+            'company' => $result['company'],
+            'address1' => $result['address1'],
+            'address2' => $result['address1'],
+            'zoneId' => $result['id_state'],
+            'zone' => $this->load->resolver('common/zone/get', array(
+                'id' => $result['id_state']
+            )),
+            'country' => $this->load->resolver('common/country/get', array(
+                'id' => $result['id_country']
+            )),
+            'countryId' => $result['id_country'],
+            'city' => $result['city'],
+            'zipcode' => $result['postcode']
+        );
     }
 
     public function addressList($args)
     {
-        // $this->load->model('common/address');
+        $address = array();
 
-        // $objectManager =ObjectManager::getInstance();
+        global $cookie;
+        
+        $result = $this->context->customer->getAddresses($cookie->id_lang);
 
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
+        foreach ($result as $value) {
+            $address[] = $this->address(array('id' => $value['id_address']));
+        }
 
-        // $customer = $customerSession->getCustomer();
-
-        // $address = array();
-
-        // $result = $this->model_common_address->getAddresses($customer->getId());
-
-        // foreach ($result as $value) {
-        //     $address[] = $this->address(array('id' => $value['address_id']));
-        // }
-
-        // return $address;
+        return $address;
     }
 
     public function editAddress($args)
     {
-        // $this->load->model('common/address');
-        // $this->model_common_address->editAddress($args['id'], $args['address']);
+        $addressData = $args['address'];
+        $address = new Address($args['id']);
+        $address->city = $addressData['city'];
+        $address->company = $addressData['company'];
+        $address->id_country = $addressData['countryId'];
+        $address->firstname = $addressData['firstName'];
+        $address->lastname = $addressData['lastName'];
+        $address->postcode = $addressData['zipcode'];
+        $address->id_state = $addressData['zoneId'];
+        $address->address1 = $addressData['address1'];
+        $address->address2 = $addressData['address2'];
 
-        // return $this->address($args);
+        if (!$address->save()) {
+            throw new Exception("Update failed");
+        }
+
+        return $this->address($args);
     }
 
     public function addAddress($args)
     {
-        // $objectManager = ObjectManager::getInstance();
+        global $cookie;
+        $addressData = $args['address'];
+        $address = new Address();
+        $address->alias = 'My Address';
+        $address->id_customer = $cookie->id_customer;
+        $address->city = $addressData['city'];
+        $address->company = $addressData['company'];
+        $address->id_country = $addressData['countryId'];
+        $address->firstname = $addressData['firstName'];
+        $address->lastname = $addressData['lastName'];
+        $address->postcode = $addressData['zipcode'];
+        $address->id_state = $addressData['zoneId'];
+        $address->address1 = $addressData['address1'];
+        $address->address2 = $addressData['address2'];
 
-        // $customerSession = $objectManager->get('\Magento\Customer\Model\Session');
+        if (!$address->save()) {
+            throw new Exception("Update failed");
+        }
 
-        // $this->load->model('common/address');
-        // $address_id = $this->model_common_address->addAddress($customerSession->getCustomerId(), $args['address']);
-
-        // return $this->address(array('id' => $address_id));
+        return $this->address(array('id' => $address->id));
     }
 
     public function removeAddress($args)
     {
-        // $objectManager = ObjectManager::getInstance();
+        $address = new Address($args['id']);
 
-        // $addressRepository = $objectManager->get('\Magento\Customer\Api\AddressRepositoryInterface');
-        // $addressRepository->deleteById($args['id']);
+        if (!$address->delete()) {
+            throw new Exception("Delete failed");
+        }
 
-        // return $this->addressList($args);
+        return $this->addressList($args);
     }
 }

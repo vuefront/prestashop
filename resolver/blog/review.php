@@ -1,7 +1,5 @@
 <?php
 
-use \Magento\Framework\App\ObjectManager;
-
 class ResolverBlogReview extends Resolver
 {
     public function add($args)

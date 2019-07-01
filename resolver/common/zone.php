@@ -18,7 +18,7 @@ class ResolverCommonZone extends Resolver
         return array(
            'id' => $args['id'],
            'name' => $zone_info['name'],
-           'countryId' => $zone_info['country_id']
+           'countryId' => $zone_info['id_country']
         );
     }
 
@@ -49,7 +49,7 @@ class ResolverCommonZone extends Resolver
         $zone_total = $this->model_common_zone->getTotalZones($filter_data);
 
         foreach ($results as $value) {
-            $zones[] = $this->get(array( 'id' => $value['zone_id'] ));
+            $zones[] = $this->get(array( 'id' => $value['id_state'] ));
         }
 
         return array(

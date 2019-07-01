@@ -1,7 +1,5 @@
 <?php
 
-use \Magento\Framework\App\ObjectManager;
-
 class ResolverStoreCurrency extends Resolver
 {
     private $codename = "d_vuefront";

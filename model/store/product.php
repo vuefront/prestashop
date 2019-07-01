@@ -109,7 +109,7 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_search'])) {
-            $sql->where("pl.`name` = '%" . $data['filter_search'] . "%' OR pl.description = '%" . $data['filter_search'] . "%' OR pl.description_short = '%" . $data['filter_search'] . "%'");
+            $sql->where("pl.`name` LIKE '%" . $data['filter_search'] . "%' OR pl.description LIKE '%" . $data['filter_search'] . "%' OR pl.description_short LIKE '%" . $data['filter_search'] . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -148,7 +148,7 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_search'])) {
-            $sql->where("pl.`name` = '%" . $data['filter_search'] . "%' OR pl.description = '%" . $data['filter_search'] . "%' OR pl.description_short = '%" . $data['filter_search'] . "%'");
+            $sql->where("pl.`name` LIKE '%" . $data['filter_search'] . "%' OR pl.description LIKE '%" . $data['filter_search'] . "%' OR pl.description_short LIKE '%" . $data['filter_search'] . "%'");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

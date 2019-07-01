@@ -4,88 +4,62 @@ class ModelCommonCountry extends Model
 {
     public function getCountry($country_id)
     {
-        $sql = "SELECT c.country_id, cc.name
-            FROM `".$this->db->getTableName('directory_country')."` c
-            left join `".$this->db->getTableName('msp_tfa_country_codes')."` cc on c.country_id = cc.code
-            where c.country_id = '".$country_id."'";
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('country', 'c');
+        $sql->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`');
+        $sql->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`');
+        $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
+        $sql->where('c.`id_country` = ' . (int) $country_id);
 
-        $results = $this->db->fetchOne($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        return $results;
+        return !empty($result) ? $result[0] : false;
     }
 
     public function getCountries($data)
     {
-        $sql = "SELECT c.country_id, cc.name
-            FROM `".$this->db->getTableName('directory_country')."` c
-            left join `".$this->db->getTableName('msp_tfa_country_codes')."` cc on c.country_id = cc.code";
+        $sort = 'cl.`name`';
+        if ($data['sort'] == 'id') {
+            $sort = 'c.`id_country`';
+        }
 
-        $implode = array();
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('country', 'c');
+        $sql->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`');
+        $sql->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`');
+        $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_name'])) {
-            $implode[] = "cc.name LIKE '%".$data['filter_name']."%'";
+            $sql->where("cl.`name` LIKE '%" . $data['filter_name']. "%'");
         }
 
-        if (count($implode) > 0) {
-            $sql .= ' where ' . implode(' AND ', $implode);
+        $sql->orderBy($sort . ' ' . $data['order']);
+        if (!empty($data['limit']) && $data['limit'] != -1) {
+            $sql->limit($data['limit'], $data['start']);
         }
 
-        $sql .= " GROUP BY c.country_id";
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        $sort_data = array(
-            'c.country_id',
-            'cc.name'
-        );
-
-        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-            $sql .= " ORDER BY " . $data['sort'];
-        } else {
-            $sql .= " ORDER BY c.country_id";
-        }
-
-        if (isset($data['order']) && ($data['order'] == 'DESC')) {
-            $sql .= " DESC";
-        } else {
-            $sql .= " ASC";
-        }
-
-        if (isset($data['start']) || isset($data['limit'])) {
-            if ($data['start'] < 0) {
-                $data['start'] = 0;
-            }
-
-            if ($data['limit'] < 1) {
-                $data['limit'] = 20;
-            }
-
-            $sql .= " LIMIT " . (int) $data['start'] . "," . (int) $data['limit'];
-        }
-
-        $results = $this->db->fetchAll($sql);
-
-        return $results;
+        return $result;
     }
 
     public function getTotalCountries($data)
     {
-        $sql = "SELECT count(*) as total
-            FROM `".$this->db->getTableName('directory_country')."` c
-            left join `".$this->db->getTableName('msp_tfa_country_codes')."` cc on c.country_id = cc.code";
-
-
-        $implode = array();
+        $sql = new DbQuery();
+        $sql->select('count(*)');
+        $sql->from('country', 'c');
+        $sql->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`');
+        $sql->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`');
+        $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_name'])) {
-            $implode[] = "cc.name LIKE '%".$data['filter_name']."%'";
-        }
-
-        if (count($implode) > 0) {
-            $sql .= ' where ' . implode(' AND ', $implode);
+            $sql->where("cl.`name` LIKE '%" . $data['filter_name']. "%'");
         }
 
 
-        $results = $this->db->fetchOne($sql);
-
-        return $results['total'];
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        return $result['count(*)'];
     }
 }

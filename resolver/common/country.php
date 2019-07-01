@@ -10,7 +10,7 @@ class ResolverCommonCountry extends Resolver
 
         $country_info = $this->model_common_country->getCountry($args['id']);
 
-        if(!$country_info) {
+        if (!$country_info) {
             return array();
         }
 
@@ -44,7 +44,7 @@ class ResolverCommonCountry extends Resolver
         $country_total = $this->model_common_country->getTotalCountries($filter_data);
 
         foreach ($results as $value) {
-            $countries[] = $this->get(array( 'id' => $value['country_id'] ));
+            $countries[] = $this->get(array( 'id' => $value['id_country'] ));
         }
 
         return array(

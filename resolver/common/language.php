@@ -12,7 +12,7 @@ class ResolverCommonLanguage extends Resolver
         $results = $this->model_common_language->getLanguages();
 
         $languages = array();
-        foreach($results as $value) {
+        foreach ($results as $value) {
             $languages[] = array(
                 'name' => $value['name'],
                 'code' => strtolower($value['locale']),
@@ -27,6 +27,9 @@ class ResolverCommonLanguage extends Resolver
     public function edit($args)
     {
         global $cookie;
+
+        $this->load->model('common/language');
+         
         $lang = $this->model_common_language->getLanguageByLocale($args['code']);
 
         $cookie->id_lang = $lang['id_lang'];
