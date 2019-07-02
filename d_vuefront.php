@@ -45,13 +45,8 @@ class d_vuefront extends Module
      */
     public function install()
     {
-        include dirname(__FILE__) . '/sql/install.php';
-
         return parent::install() &&
-        $this->initConfig() &&
-        $this->registerHook('actionAdminControllerSetMedia') &&
-        $this->registerHook('actionFrontControllerSetMedia') &&
-        $this->registerHook('displayHome');
+        $this->registerAdminTab();
     }
 
     /**
@@ -60,221 +55,75 @@ class d_vuefront extends Module
      */
     public function uninstall()
     {
-        include dirname(__FILE__) . '/sql/uninstall.php';
-
         return Configuration::deleteByName($this->name) &&
-        parent::uninstall();
+        parent::uninstall() && 
+        $this->deleteAdminTab();
     }
 
-    // /**
-    //  * Add the CSS & JavaScript files you want to be loaded in BO.
-    //  */
-    // public function hookActionAdminControllerSetMedia()
-    // {
-    //     if ($this->isConfigPage()) {
-    //         $this->context->controller->addJS($this->_path . 'views/js/configuration.js');
-    //         $this->context->controller->addCSS($this->_path . 'views/css/configuration.css');
-    //     }
-    // }
+    /**
+     * Configuration page
+     */
+    public function getContent()
+    {
+        $this->config_values = $this->getConfigValues();
 
-    // /**
-    //  * Set the default configuration
-    //  * @return boolean
-    //  */
-    // protected function initConfig()
-    // {
-    //     $this->config_values = array(
-    //         'author' => 'Mark Twain',
-    //         'show_author' => true
-    //     );
+        $this->context->smarty->assign(array(
+            'module' => array(
+                'class' => get_class($this),
+                'name' => $this->name,
+                'displayName' => $this->displayName,
+                'dir' => $this->_path
+            )
+        ));
 
-    //     $languages = Language::getLanguages(false);
-    //     foreach ($languages as $lang) {
-    //         $this->config_values['quote'][$lang['id_lang']] = 'The secret of getting ahead is getting started. The secret of getting started is breaking your complex overwhelming tasks into small manageable tasks, and then starting on the first one.';
-    //     }
+        $this->context->controller->addCSS($this->_path . '/views/css/admin.css');
+        $this->context->controller->addJS($this->_path . '/views/js/clipboard.min.js');
 
-    //     return $this->setConfigValues($this->config_values);
-    // }
+        $this->context->smarty->assign(array(
+            'catalog' => Tools::getHttpHost(true).__PS_BASE_URI__.'index.php?controller=graphql&module=d_vuefront&fc=module',
+            'blog' => Module::isInstalled('prestablog')
+        ));
 
-    // /**
-    //  * Configuration page
-    //  */
-    // public function getContent()
-    // {
-    //     $this->config_values = $this->getConfigValues();
+        return $this->display(__FILE__, 'views/templates/admin/configure.tpl');
+    }
 
-    //     $this->context->smarty->assign(array(
-    //         'module' => array(
-    //             'class' => get_class($this),
-    //             'name' => $this->name,
-    //             'displayName' => $this->displayName,
-    //             'dir' => $this->_path
-    //         )
-    //     ));
+    /**
+     * Get configuration array from database
+     * @return array
+     */
+    public function getConfigValues()
+    {
+        return json_decode(Configuration::get($this->name), true);
+    }
 
-    //     return $this->postProcess();
-    // }
+    public function registerAdminTab()
+    {
+        $tab = new Tab();
+        $tab->class_name = 'AdminVuefront';
+        foreach (Language::getLanguages(false) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Vuefront';
+        }
 
-    // /**
-    //  * Save form data.
-    //  */
-    // protected function postProcess()
-    // {
-    //     $output = '';
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminTools');
+        $tab->module = 'd_vuefront';
+        $tab->icon = 'library_books';
 
-    //     switch ($this->getPostSubmitValue()) {
-    //         /* save module configuration */
-    //         case 'saveConfig':
-    //             $languages = Language::getLanguages();
-    //             foreach ($languages as $lang) {
-    //                 $this->config_values['quote'][$lang['id_lang']] = Tools::getValue('quote_' . $lang['id_lang']);
-    //             }
+        return $tab->save();
+    }
 
-    //             $config_keys = array_keys($this->config_values);
-    //             unset($config_keys['quote']); // language field was set
+    public function deleteAdminTab()
+    {
+        foreach (array('AdminVuefront') as $tab_name) {
+            $id_tab = (int)Tab::getIdFromClassName($tab_name);
+            if ($id_tab) {
+                $tab = new Tab($id_tab);
+                $tab->delete();
+            }
+        }
 
-    //             foreach ($config_keys as $key) {
-    //                 $this->config_values[$key] = Tools::getValue($key, $this->config_values[$key]);
-    //             }
+        return true;
+    }
 
-    //             if ($this->setConfigValues($this->config_values)) {
-    //                 $output .= $this->displayConfirmation($this->l('Settings updated'));
-    //             }
-
-    //         // it continues to default
-
-    //         default:
-    //             $output .= $this->renderForm();
-    //             break;
-    //     }
-
-    //     return $output;
-    // }
-
-    // /**
-    //  * Create the structure of your form.
-    //  */
-    // protected function getConfigForm()
-    // {
-    //     return array(
-    //         'form' => array(
-    //             'legend' => array(
-    //                 'title' => $this->displayName,
-    //                 'icon' => 'icon-cogs'
-    //             ),
-    //             'input' => array(
-    //                 array(
-    //                     'label' => $this->l('Quote'),
-    //                     'name' => 'quote',
-    //                     'type' => 'textarea',
-    //                     'cols' => 10,
-    //                     'rows' => 10,
-    //                     'autoload_rte' => true,
-    //                     'lang' => true,
-    //                     'required' => true
-    //                 ),
-    //                 array(
-    //                     'label' => $this->l('Author'),
-    //                     'name' => 'author',
-    //                     'type' => 'text',
-    //                     'class' => 'fixed-width-lg',
-    //                 ),
-    //                 array(
-    //                     'label' => $this->l('Show Author'),
-    //                     'name' => 'show_author',
-    //                     'type' => 'switch',
-    //                     'is_bool' => true,
-    //                     'values' => array(
-    //                         array(
-    //                             'id' => 'active_on',
-    //                             'value' => 1,
-    //                             'label' => $this->l('Yes')
-    //                         ),
-    //                         array(
-    //                             'id' => 'active_off',
-    //                             'value' => 0,
-    //                             'label' => $this->l('No')
-    //                         )
-    //                     ),
-    //                 ),
-    //             ),
-    //             'submit' => array(
-    //                 'name' => 'saveConfig',
-    //                 'title' => $this->l('Save'),
-    //                 'class' => 'btn btn-success pull-right'
-    //             )
-    //         )
-    //     );
-    // }
-
-    // /**
-    //  * Create the form that will be displayed in the configuration of your module.
-    //  */
-    // protected function renderForm()
-    // {
-    //     $helper = new HelperForm();
-
-    //     $helper->show_toolbar = false;
-    //     $helper->table = $this->name;
-    //     $helper->module = $this;
-    //     $helper->default_form_language = $this->context->language->id;
-    //     $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-
-    //     $helper->identifier = $this->name;
-    //     $helper->token = Tools::getAdminTokenLite('AdminModules');
-    //     $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name . '&module_name=' . $this->name . '&tab_module=' . $this->tab;
-
-    //     $helper->tpl_vars = array(
-    //         'fields_value' => $this->config_values, /* Add values for your inputs */
-    //         'languages' => $this->context->controller->getLanguages(),
-    //         'id_language' => $this->context->language->id,
-    //     );
-
-    //     return $helper->generateForm(array($this->getConfigForm()));
-    // }
-
-    // /**
-    //  * Get configuration array from database
-    //  * @return array
-    //  */
-    // public function getConfigValues()
-    // {
-    //     return json_decode(Configuration::get($this->name), true);
-    // }
-
-    // /**
-    //  * Set configuration array to database
-    //  * @param array $config
-    //  * @param bool $merge when true, $config can be only a subset to modify or add additional fields
-    //  * @return array
-    //  */
-    // public function setConfigValues($config, $merge = false)
-    // {
-    //     if ($merge) {
-    //         $config = array_merge($this->getConfigValues(), $config);
-    //     }
-
-    //     if (Configuration::updateValue($this->name, json_encode($config))) {
-    //         return $config;
-    //     }
-
-    //     return false;
-    // }
-
-    // /**
-    //  * Get the action submited from the configuration page
-    //  * @return string
-    //  */
-    // protected function getPostSubmitValue()
-    // {
-    //     foreach (self::$config_post_submit_values as $value) {
-    //         if (Tools::isSubmit($value)) {
-    //             return $value;
-    //         }
-    //     }
-
-    //     return false;
-    // }
 
     // /**
     //  * Determins if on the module configuration page
@@ -295,13 +144,13 @@ class d_vuefront extends Module
     //     return Tools::getValue('controller') === 'Admin' . ucfirst($page);
     // }
 
-    // /**
-    //  * Add the CSS & JavaScript files on FO.
-    //  */
-    // public function hookActionFrontControllerSetMedia()
+    /**
+     * Add the CSS & JavaScript files on FO.
+     */
+    // public function hookActionAdminControllerSetMedia()
     // {
-    //     $this->context->controller->addJS($this->_path . '/views/js/front.js');
-    //     $this->context->controller->addCSS($this->_path . '/views/css/front.css');
+    //     // $this->context->controller->addJS($this->_path . '/views/js/front.js');
+        
     // }
 
     // /**

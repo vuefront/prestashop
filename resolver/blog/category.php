@@ -3,36 +3,49 @@
 
 class ResolverBlogCategory extends Resolver
 {
+    private $status = false;
+
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->status = Module::isInstalled('prestablog');
+    }
+
     public function get($data)
     {
-        $this->load->model('blog/category');
-        $category = $this->model_blog_category->getCategory($data['id']);
+        if ($this->status) {
+            $this->load->model('blog/category');
+            $category = $this->model_blog_category->getCategory($data['id']);
 
-        return array(
-            'id'             => $category['id'],
-            'name'           => $category['name'],
-            'description'    => $category['description'],
-            'parent_id'      => (string) $category['parent_id'],
-            'image'          => $category['image'],
-            'imageLazy'      => $category['imageLazy'],
-            'keyword'        => $category['keyword'],
-            'url'            => function ($root, $args) {
-                return $this->url(array(
-                    'parent' => $root,
-                    'args'   => $args
-                ));
-            },
-            'categories'     => function ($root, $args) {
-                return $this->child(array(
-                    'parent' => $root,
-                    'args'   => $args
-                ));
-            }
-        );
+            return array(
+                'id'             => $category['id'],
+                'name'           => $category['name'],
+                'description'    => $category['description'],
+                'parent_id'      => (string) $category['parent_id'],
+                'image'          => $category['image'],
+                'imageLazy'      => $category['imageLazy'],
+                'keyword'        => $category['keyword'],
+                'url'            => function ($root, $args) {
+                    return $this->url(array(
+                        'parent' => $root,
+                        'args'   => $args
+                    ));
+                },
+                'categories'     => function ($root, $args) {
+                    return $this->child(array(
+                        'parent' => $root,
+                        'args'   => $args
+                    ));
+                }
+            );
+        } else {
+            return array();
+        }
     }
 
     public function getList($args)
     {
+        if ($this->status) {
         $this->load->model('blog/category');
         $filter_data = array(
             'limit'  => $args['size'],
@@ -65,6 +78,11 @@ class ResolverBlogCategory extends Resolver
             'totalPages'       => (int) ceil($category_total / $args['size']),
             'totalElements'    => (int) $category_total,
         );
+        } else {
+            return array(
+                'content' => array()
+            );
+        }
     }
 
     public function child($data)
