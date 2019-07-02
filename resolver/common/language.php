@@ -13,9 +13,13 @@ class ResolverCommonLanguage extends Resolver
 
         $languages = array();
         foreach ($results as $value) {
+            $code = strtolower($value['locale']);
+            if($code == 'en-us') {
+                $code = 'en-gb';
+            }
             $languages[] = array(
                 'name' => $value['name'],
-                'code' => strtolower($value['locale']),
+                'code' => $code,
                 'image'=> '',
                 'active' => $value['id_lang'] == $cookie->id_lang
             );
@@ -29,8 +33,15 @@ class ResolverCommonLanguage extends Resolver
         global $cookie;
 
         $this->load->model('common/language');
+
+        $code = $args['code'];
+
+        if ($code == 'en-gb') {
+            $code = 'en-us';
+        }
+
          
-        $lang = $this->model_common_language->getLanguageByLocale($args['code']);
+        $lang = $this->model_common_language->getLanguageByLocale($code);
 
         $cookie->id_lang = $lang['id_lang'];
 
