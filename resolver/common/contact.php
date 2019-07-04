@@ -6,6 +6,8 @@ class ResolverCommonContact extends Resolver
 
     public function get()
     {
+        $this->load->model('common/store');
+
         global $cookie;
 
         $address = $this->context->shop->getAddress();
@@ -38,10 +40,19 @@ class ResolverCommonContact extends Resolver
 
         $locations = array();
 
-        $imageRetriever = new \PrestaShop\PrestaShop\Adapter\Image\ImageRetriever($this->context->link);
+        $result = $this->model_common_store->getStores();
 
-        foreach (Store::getStores($cookie->id_lang) as $store) {
-            $image = $imageRetriever->getImage(new Store($store['id_store']), $store['id_store']);
+        foreach ($result as $store) {
+            $store_info = new Store($store['id_store']);
+            if (_PS_VERSION_ > '1.7.0.0') {
+                $imageRetriever = new \PrestaShop\PrestaShop\Adapter\Image\ImageRetriever($this->context->link);
+                $image = $imageRetriever->getImage($store_info, $store['id_store']);
+                $thumb = $image['large']['url'];
+                $thumbLazy = $image['small']['url'];
+            } else {
+                $thumb = $this->context->link->getImageLink($store['name'], $store['id_store']);
+                $thumbLazy = $this->context->link->getImageLink($store['name'], $store['id_store']);
+            }
 
             $locations[] = array(
                 'name' => $store['name'],
@@ -50,11 +61,10 @@ class ResolverCommonContact extends Resolver
                 'geocode' => $store['latitude'].', '.$store['longitude'],
                 'telephone' => $store['phone'],
                 'fax' => $store['fax'],
-                'image' => $image['large']['url'],
-                'imageLazy' => $image['small']['url']
+                'image' => $thumb,
+                'imageLazy' => $thumbLazy
             );
         }
-
 
         return array(
             'store' => Configuration::get('PS_SHOP_NAME'),
@@ -111,7 +121,13 @@ class ResolverCommonContact extends Resolver
                     '{message}' => $args['message']
                 ),
                 Configuration::get('PS_SHOP_EMAIL'),
-                NULL, NULL, NULL,NULL,NULL,_PS_MODULE_DIR_.'d_vuefront/mails/');
+                null,
+                null,
+                null,
+                null,
+                null,
+                _PS_MODULE_DIR_.'d_vuefront/mails/'
+            );
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

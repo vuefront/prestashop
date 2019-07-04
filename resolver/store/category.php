@@ -3,7 +3,7 @@
 class ResolverStoreCategory extends Resolver {
     public function get($args) {
     	$this->load->model('store/category');
-
+        
         $category_info = $this->model_store_category->getCategory($args['id']);
 
         return array(
@@ -45,9 +45,11 @@ class ResolverStoreCategory extends Resolver {
         }
 
         $product_categories = $this->model_store_category->getCategories($filter_data);
+
         $category_total = $this->model_store_category->getTotalCategories($filter_data);
   
         $categories = array();
+
         foreach ($product_categories as $category) {
             $categories[] = $this->get(array( 'id' => $category['id_category'] ));
         }

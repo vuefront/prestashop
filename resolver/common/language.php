@@ -13,7 +13,12 @@ class ResolverCommonLanguage extends Resolver
 
         $languages = array();
         foreach ($results as $value) {
-            $code = strtolower($value['locale']);
+            if(_PS_VERSION_ > '1.7.0.0') {
+                $locale = $value['locale'];
+            } else {
+                $locale = $value['language_code'];
+            }
+            $code = strtolower($locale);
             if($code == 'en-us') {
                 $code = 'en-gb';
             }

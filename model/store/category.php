@@ -6,23 +6,28 @@ class ModelStoreCategory extends Model
     public function getCategory($category_id)
     {
         $category = new Category((int) $category_id, (int) $this->context->language->id, 1);
-
-        $retriever = new ImageRetriever(
-            $this->context->link
-        );
-
-        $category->image = $retriever->getImage(
-            $category,
-            $category->id_image
-        );
+        if (_PS_VERSION_ >= '1.7.0.0') {
+            $retriever = new ImageRetriever(
+                $this->context->link
+            );
+            $image = $retriever->getImage(
+                $category,
+                $category->id_image
+            );
+            $thumb = $image['large']['url'];
+            $thumbLazy = $image['small']['url'];
+        } else {
+            $thumb = $this->context->link->getCatImageLink($category->link_rewrite, $category->id_image);
+            $thumbLazy = $this->context->link->getCatImageLink($category->link_rewrite, $category->id_image);
+        }
 
         return array(
             'id' => $category->id,
             'name' => $category->name,
             'description' => html_entity_decode($category->description, ENT_QUOTES, 'UTF-8'),
             'parent_id' => $category->id_parent,
-            'image' => $category->image['large']['url'],
-            'imageLazy' => $category->image['small']['url'],
+            'image' => $thumb,
+            'imageLazy' => $thumbLazy,
             'keyword' => $category->link_rewrite
         );
     }

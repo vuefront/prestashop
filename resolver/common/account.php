@@ -6,7 +6,9 @@ class ResolverCommonAccount extends Resolver
 {
     public function login($args)
     {
+        $this->load->model('common/customer');
         $customer = new Customer();
+
         $authentication = $customer->getByEmail(
             $args["email"],
             $args["password"]
@@ -17,13 +19,18 @@ class ResolverCommonAccount extends Resolver
         } elseif (!$authentication || !$customer->id || $customer->is_guest) {
             throw new Exception('Authentication failed.');
         } else {
-            $this->context->updateCustomer($customer);
+            if (_PS_VERSION_ > '1.7.0.0') {
+                $this->context->updateCustomer($customer);
+            } else {
+                $this->model_common_customer->updateCustomer($customer);
+            }
 
             Hook::exec('actionAuthentication', ['customer' => $this->context->customer]);
 
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
         }
+
 
         return $this->get($customer->id);
     }
@@ -35,7 +42,7 @@ class ResolverCommonAccount extends Resolver
         $cookie->logout();
 
         return array(
-            'status' => true
+            'status' => false
         );
     }
 
@@ -52,9 +59,14 @@ class ResolverCommonAccount extends Resolver
         $customer->firstname = $customerData['firstName'];
         $customer->lastname = $customerData['lastName'];
         $customer->email = $customerData['email'];
-        $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
-
-        $customer->passwd = $crypto->hash($customerData['password']);
+        
+        if (_PS_VERSION_ > '1.7.0.0') {
+            $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
+            $customer->passwd = $crypto->hash($customerData['password']);
+        } else {
+            $customer->passwd = Tools::encrypt($customerData['password']);
+        }
+       
         $customer->save();
 
         return $this->get($customer->id);
@@ -81,9 +93,13 @@ class ResolverCommonAccount extends Resolver
     {
         global $cookie;
 
-        $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
+        if (_PS_VERSION_ > '1.7.0.0') {
+            $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
+            $this->context->customer->passwd = $crypto->hash($args['password']);
+        } else {
+            $this->context->customer->passwd = Tools::encrypt($args['password']);
+        }
 
-        $this->context->customer->passwd = $crypto->hash($args['password']);
 
         if (!$this->context->customer->save()) {
             throw new Exception("Update failed");
@@ -122,8 +138,9 @@ class ResolverCommonAccount extends Resolver
 
     public function address($args)
     {
-        global $cookie;
-        $result = $this->context->customer->getSimpleAddress($args['id'], $cookie->id_lang);
+        $this->load->model('common/address');
+
+        $result = $this->model_common_address->getAddress($args['id']);
 
         return array(
             'id' => $args['id'],
@@ -185,6 +202,7 @@ class ResolverCommonAccount extends Resolver
     {
         global $cookie;
         $addressData = $args['address'];
+
         $address = new Address();
         $address->alias = 'My Address';
         $address->id_customer = $cookie->id_customer;
@@ -197,6 +215,7 @@ class ResolverCommonAccount extends Resolver
         $address->id_state = $addressData['zoneId'];
         $address->address1 = $addressData['address1'];
         $address->address2 = $addressData['address2'];
+
 
         if (!$address->save()) {
             throw new Exception("Update failed");
