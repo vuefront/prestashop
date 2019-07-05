@@ -11,7 +11,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class d_Vuefront extends Module
+class Vuefront extends Module
 {
 
     /** @var array Use to store the configuration from database */
@@ -22,7 +22,7 @@ class d_Vuefront extends Module
 
     public function __construct()
     {
-        $this->name = 'd_vuefront'; // internal identifier, unique and lowercase
+        $this->name = 'vuefront'; // internal identifier, unique and lowercase
         $this->tab = 'front_office_features'; // backend module coresponding category
         $this->version = '0.1.0'; // version number for the module
         $this->author = 'VueFront'; // module author
@@ -106,7 +106,7 @@ class d_Vuefront extends Module
         }
 
         $tab->id_parent = (int)Tab::getIdFromClassName('AdminTools');
-        $tab->module = 'd_vuefront';
+        $tab->module = 'vuefront';
         $tab->icon = 'library_books';
 
         return $tab->save();

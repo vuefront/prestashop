@@ -12,7 +12,7 @@
 
 class ResolverCommonContact extends Resolver
 {
-    private $codename = "d_vuefront";
+    private $codename = "vuefront";
 
     public function upload()
     {

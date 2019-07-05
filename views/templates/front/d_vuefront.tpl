@@ -9,4 +9,4 @@
  * @version   0.1.0
  *}
 
-{$d_vuefront|escape:'htmlall':'UTF-8'}
+{$vuefront|escape:'htmlall':'UTF-8'}

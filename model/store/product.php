@@ -31,7 +31,9 @@ class ModelStoreProduct extends Model
     {
         $product = new Product($product_id, true, $this->context->language->id, $this->context->shop->id);
 
-        $images = Db::getInstance()->ExecuteS('SELECT `id_image` FROM `' . _DB_PREFIX_ . 'image` WHERE `id_product` = ' . (int) ($product_id));
+        $images = Db::getInstance()->ExecuteS(
+            'SELECT `id_image` FROM `' . _DB_PREFIX_ . 'image` WHERE `id_product` = ' . (int) ($product_id)
+        );
         foreach ($images as $key => $image_id) {
             $images[$key]['image'] = $this->context->link->getImageLink(
                 $product->link_rewrite,
@@ -73,7 +75,8 @@ class ModelStoreProduct extends Model
         return $attributes;
     }
 
-    //PrestaShop does not have attributes like OpenCart. PrestaShop Attributes are OpenCart Options. SO will just use options reduced.
+    // PrestaShop does not have attributes like OpenCart.
+    // PrestaShop Attributes are OpenCart Options. SO will just use options reduced.
     public function getProductAttributes($product_id)
     {
         $result = Product::getAttributesInformationsByProduct($product_id);

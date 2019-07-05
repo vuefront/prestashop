@@ -24,6 +24,7 @@ final class Loader
         $route = preg_replace('/[^a-zA-Z0-9_\/]/', '', (string)$route);
         
         $action = new Action($route);
+
         $output = $action->execute($this->registry, array(&$data));
 
         if (!$output instanceof Exception) {

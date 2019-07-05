@@ -19,9 +19,9 @@ class ModelStartupStartup extends Model
         $result = array();
         foreach ($mapping as $key => $value) {
             $that = $this;
-            $result[$key] = function ($root, $args, $context) use ($value, $that) {
+            $result[$key] = function ($root, $args) use ($value, $that) {
                 try {
-                    return $that->load->resolver($value, $args);
+                    return $that->load->resolver($value, $args, $root);
                 } catch (Exception $e) {
                     throw new MySafeException($e->getMessage());
                 }

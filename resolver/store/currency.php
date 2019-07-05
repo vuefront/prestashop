@@ -12,7 +12,7 @@
 
 class ResolverStoreCurrency extends Resolver
 {
-    private $codename = "d_vuefront";
+    private $codename = "vuefront";
 
     public function get()
     {

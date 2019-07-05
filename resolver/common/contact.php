@@ -12,7 +12,7 @@
 
 class ResolverCommonContact extends Resolver
 {
-    private $codename = "d_vuefront";
+    private $codename = "vuefront";
 
     public function get()
     {
@@ -152,7 +152,7 @@ class ResolverCommonContact extends Resolver
                 null,
                 null,
                 null,
-                _PS_MODULE_DIR_.'d_vuefront/mails/'
+                _PS_MODULE_DIR_.'vuefront/mails/'
             );
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

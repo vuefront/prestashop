@@ -92,7 +92,9 @@ class ModelBlogPost extends Model
         }
 
         if (!empty($data['filter_description']) && !empty($data['filter_name'])) {
-            $sql->where("pnl.`title` = '%" . $data['filter_name'] . "%' OR pnl.content = '%" . $data['filter_description'] . "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
+            $sql->where("pnl.`title` = '%" . $data['filter_name'] .
+            "%' OR pnl.content = '%" . $data['filter_description'] .
+            "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);

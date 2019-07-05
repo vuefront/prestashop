@@ -10,7 +10,7 @@
  * @version   0.1.0
  */
 
-define('DIR_PLUGIN', realpath(_PS_MODULE_DIR_.'d_vuefront/').'/');
+define('DIR_PLUGIN', realpath(_PS_MODULE_DIR_.'vuefront/').'/');
 
 require_once(DIR_PLUGIN . 'system/engine/action.php');
 require_once(DIR_PLUGIN . 'system/engine/resolver.php');

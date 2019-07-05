@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-    <name>d_vuefront</name>
+    <name>vuefront</name>
     <displayName><![CDATA[VueFront]]></displayName>
     <version><![CDATA[0.1.0]]></version>
     <description><![CDATA[CMS Connect App for PrestaShop]]></description>

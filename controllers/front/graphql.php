@@ -16,13 +16,13 @@ ini_set('display_errors', 1);
 require_once dirname(__FILE__) . '/../../system/startup.php';
 
 /**
- * d_vuefront
- * d_vuefront.php
+ * vuefront
+ * vuefront.php
  */
-class d_VuefrontGraphqlModuleFrontController extends ModuleFrontController
+class VuefrontGraphqlModuleFrontController extends ModuleFrontController
 {
-    private $codename = "d_vuefront";
-    private $route = "d_vuefront";
+    private $codename = "vuefront";
+    private $route = "vuefront";
 
     public function initContent()
     {
