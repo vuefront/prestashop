@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * supported: PRESTABLOG
  *
  * Thanks to the team from PrestaBlog for providing the codebase
@@ -13,6 +13,15 @@
  *
  * You can always contact our support via https://vuefront.com/support
  * for assitance in integrating your blog module with our CMS Connect App.
+ *
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
  */
 
 include_once _PS_MODULE_DIR_ . 'prestablog/class/commentnews.class.php';

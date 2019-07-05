@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ResolverBlogPost extends Resolver
 {
@@ -15,6 +25,7 @@ class ResolverBlogPost extends Resolver
 
             $post = $this->model_blog_post->getPost($args['id']);
 
+            $that = $this;
             return array(
                 'id'               => $post['id'],
                 'title'            => $post['title'],
@@ -23,8 +34,8 @@ class ResolverBlogPost extends Resolver
                 'keyword'          => $post['keyword'],
                 'image'            => $post['image'],
                 'imageLazy'        => $post['imageLazy'],
-                'reviews' => function ($root, $args) {
-                    return $this->load->resolver('blog/review/get', array(
+                'reviews' => function ($root, $args) use ($that) {
+                    return $that->load->resolver('blog/review/get', array(
                         'parent' => $root,
                         'args' => $args
                     ));
@@ -40,11 +51,11 @@ class ResolverBlogPost extends Resolver
         if ($this->status) {
             $this->load->model('blog/post');
             $filter_data = array(
-            'limit' => $args['size'],
-            'start'         => ($args['page'] - 1) * $args['size'],
-            'sort'        => $args['sort'],
-            'order'          => $args['order']
-        );
+                'limit' => $args['size'],
+                'start'         => ($args['page'] - 1) * $args['size'],
+                'sort'        => $args['sort'],
+                'order'          => $args['order']
+            );
 
             if ($args['category_id'] !== 0) {
                 $filter_data['filter_category_id'] = $args['category_id'];

@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
 
@@ -35,11 +45,9 @@ class ResolverCommonAccount extends Resolver
         return $this->get($customer->id);
     }
 
-    public function logout($args)
+    public function logout()
     {
-        global $cookie;
-
-        $cookie->logout();
+        $this->context->cookie->logout();
 
         return array(
             'status' => false
@@ -74,8 +82,6 @@ class ResolverCommonAccount extends Resolver
 
     public function edit($args)
     {
-        global $cookie;
-
         $customerData = $args['customer'];
 
         $this->context->customer->email = $customerData['email'];
@@ -86,13 +92,11 @@ class ResolverCommonAccount extends Resolver
             throw new Exception("Update failed");
         }
 
-        return $this->get($cookie->id_customer);
+        return $this->get($this->context->cookie->id_customer);
     }
 
     public function editPassword($args)
     {
-        global $cookie;
-
         if (_PS_VERSION_ > '1.7.0.0') {
             $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
             $this->context->customer->passwd = $crypto->hash($args['password']);
@@ -105,7 +109,7 @@ class ResolverCommonAccount extends Resolver
             throw new Exception("Update failed");
         }
 
-        return $this->get($cookie->id_customer);
+        return $this->get($this->context->cookie->id_customer);
     }
 
     public function get($user_id)
@@ -120,18 +124,16 @@ class ResolverCommonAccount extends Resolver
         );
     }
 
-    public function isLogged($args)
+    public function isLogged()
     {
         $customer = array();
         
-        global $cookie;
-
-        if ($cookie->isLogged()) {
-            $customer = $this->get($cookie->id_customer);
+        if ($this->context->cookie->isLogged()) {
+            $customer = $this->get($this->context->cookie->id_customer);
         }
 
         return array(
-            'status' => $cookie->isLogged(),
+            'status' => $this->context->cookie->isLogged(),
             'customer' => $customer
         );
     }
@@ -162,13 +164,11 @@ class ResolverCommonAccount extends Resolver
         );
     }
 
-    public function addressList($args)
+    public function addressList()
     {
         $address = array();
-
-        global $cookie;
         
-        $result = $this->context->customer->getAddresses($cookie->id_lang);
+        $result = $this->context->customer->getAddresses($this->context->cookie->id_lang);
 
         foreach ($result as $value) {
             $address[] = $this->address(array('id' => $value['id_address']));
@@ -200,12 +200,11 @@ class ResolverCommonAccount extends Resolver
 
     public function addAddress($args)
     {
-        global $cookie;
         $addressData = $args['address'];
 
         $address = new Address();
         $address->alias = 'My Address';
-        $address->id_customer = $cookie->id_customer;
+        $address->id_customer = $this->context->cookie->id_customer;
         $address->city = $addressData['city'];
         $address->company = $addressData['company'];
         $address->id_country = $addressData['countryId'];

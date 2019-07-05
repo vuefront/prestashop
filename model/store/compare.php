@@ -1,14 +1,23 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
+
 class ModelStoreCompare extends Model
 {
     public function getCompare()
     {
-        global $cookie;
+        $result = array();
 
-         $result = array();
-
-        if (isset($cookie->vf_compare)) {
-            $result = json_decode($cookie->vf_compare, true);
+        if (isset($this->context->cookie->vf_compare)) {
+            $result = json_decode($this->context->cookie->vf_compare, true);
         }
 
         return $result;
@@ -16,12 +25,10 @@ class ModelStoreCompare extends Model
 
     public function addCompare($product_id)
     {
-        global $cookie;
-
         $compare = array();
 
-        if (isset($cookie->vf_compare)) {
-            $compare = json_decode($cookie->vf_compare, true);
+        if (isset($this->context->cookie->vf_compare)) {
+            $compare = json_decode($this->context->cookie->vf_compare, true);
         }
 
 
@@ -29,17 +36,15 @@ class ModelStoreCompare extends Model
             $compare[] = (int)$product_id;
         }
 
-        $cookie->vf_compare = json_encode($compare);
+        $this->context->cookie->vf_compare = json_encode($compare);
     }
 
     public function deleteCompare($product_id)
     {
-        global $cookie;
-
         $compare = array();
 
-        if (isset($cookie->vf_compare)) {
-            $compare = json_decode($cookie->vf_compare, true);
+        if (isset($this->context->cookie->vf_compare)) {
+            $compare = json_decode($this->context->cookie->vf_compare, true);
         }
    
         if (!empty($compare)) {
@@ -50,7 +55,6 @@ class ModelStoreCompare extends Model
             }
         }
 
-        $cookie->vf_compare = json_encode($compare);
-
+        $this->context->cookie->vf_compare = json_encode($compare);
     }
 }

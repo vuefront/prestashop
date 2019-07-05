@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ModelCommonZone extends Model
 {
@@ -12,7 +22,6 @@ class ModelCommonZone extends Model
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
         return !empty($result) ? $result[0] : false;
-
     }
 
     public function getZones($data)

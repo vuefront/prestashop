@@ -1,12 +1,19 @@
 <?php
-use Squareup\Exception;
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ResolverStoreCart extends Resolver
 {
     public function add($args)
     {
-        global $cookie;
-
         $qty = $args['quantity'];
         $product_attribute_id = 0;
 
@@ -16,7 +23,7 @@ class ResolverStoreCart extends Resolver
             $groups[$value['id']] = $value['value'];
         }
 
-        $producToAdd = new Product((int)($args['id']), true, (int)($cookie->id_lang));
+        $producToAdd = new Product((int)($args['id']), true, (int)($this->context->cookie->id_lang));
         if (!empty($groups)) {
             if (_PS_VERSION_ > '1.7.0.0') {
                 $product_attribute_id = (int)Product::getIdProductAttributeByIdAttributes(
@@ -37,11 +44,8 @@ class ResolverStoreCart extends Resolver
         if ((!$producToAdd->id or !$producToAdd->active)) {
             throw new Exception("Failed");
         }
-        if ($product_attribute_id > 0 and is_numeric($product_attribute_id)) {
-            if (!$producToAdd->isAvailableWhenOutOfStock($producToAdd->out_of_stock) and !Attribute::checkAttributeQty((int)$product_attribute_id, (int)$qty)) {
-                $qty = getAttributeQty($product_attribute_id);
-            }
-        } elseif (!$producToAdd->checkQty((int)$qty)) {
+        
+        if (!$producToAdd->checkQty((int)$qty)) {
             $qty = $producToAdd->getQuantity($args['id']);
         }
 
@@ -94,7 +98,7 @@ class ResolverStoreCart extends Resolver
         return $this->get($args);
     }
 
-    public function get($args)
+    public function get()
     {
         $cartData = array(
             'products' => array(),
@@ -175,7 +179,8 @@ class ResolverStoreCart extends Resolver
                 pac.`id_product_attribute`
             FROM
                 `' . _DB_PREFIX_ . 'product_attribute_combination` pac
-                INNER JOIN `' . _DB_PREFIX_ . 'product_attribute` pa ON pa.id_product_attribute = pac.id_product_attribute
+                INNER JOIN `' . _DB_PREFIX_ . 'product_attribute` pa 
+                ON pa.id_product_attribute = pac.id_product_attribute
             WHERE
                 pa.id_product = ' . $idProduct . '
                 AND pac.id_attribute IN (' . $idAttributesImploded . ')
@@ -195,7 +200,8 @@ class ResolverStoreCart extends Resolver
                     a.`id_attribute`
                 FROM
                     `' . _DB_PREFIX_ . 'attribute` a
-                    INNER JOIN `' . _DB_PREFIX_ . 'attribute_group` g ON a.`id_attribute_group` = g.`id_attribute_group`
+                    INNER JOIN `' . _DB_PREFIX_ . 'attribute_group` g 
+                    ON a.`id_attribute_group` = g.`id_attribute_group`
                 WHERE
                     a.`id_attribute` IN (' . $idAttributesImploded . ')
                 ORDER BY
@@ -214,7 +220,8 @@ class ResolverStoreCart extends Resolver
                         pac.`id_product_attribute`
                     FROM
                         `' . _DB_PREFIX_ . 'product_attribute_combination` pac
-                        INNER JOIN `' . _DB_PREFIX_ . 'product_attribute` pa ON pa.id_product_attribute = pac.id_product_attribute
+                        INNER JOIN `' . _DB_PREFIX_ . 'product_attribute` pa 
+                        ON pa.id_product_attribute = pac.id_product_attribute
                     WHERE
                         pa.id_product = ' . (int) $idProduct . '
                         AND pac.id_attribute IN (' . implode(',', array_map('intval', $orderred)) . ')

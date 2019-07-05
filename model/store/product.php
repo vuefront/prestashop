@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ModelStoreProduct extends Model
 {
@@ -6,7 +16,15 @@ class ModelStoreProduct extends Model
     public function getProductRelated($product_id, $limit = 4)
     {
         $product = $this->getProduct($product_id);
-        return $this->getProducts(array('filter_category_id' => $product->id_category_default, 'limit' => $limit, 'sort' => '', 'order' => '', 'start' => 0));
+        return $this->getProducts(
+            array(
+                'filter_category_id' => $product->id_category_default,
+                'limit' => $limit,
+                'sort' => '',
+                'order' => '',
+                'start' => 0
+                )
+        );
     }
 
     public function getProductImages($product_id)
@@ -15,9 +33,21 @@ class ModelStoreProduct extends Model
 
         $images = Db::getInstance()->ExecuteS('SELECT `id_image` FROM `' . _DB_PREFIX_ . 'image` WHERE `id_product` = ' . (int) ($product_id));
         foreach ($images as $key => $image_id) {
-            $images[$key]['image'] = $this->context->link->getImageLink($product->link_rewrite, $image_id['id_image'], ImageType::getFormatedName("small"));
-            $images[$key]['imageLazy'] = $this->context->link->getImageLink($product->link_rewrite, $image_id['id_image'], ImageType::getFormatedName("large"));
-            $images[$key]['imageBig'] = $this->context->link->getImageLink($product->link_rewrite, $image_id['id_image'], ImageType::getFormatedName("large"));
+            $images[$key]['image'] = $this->context->link->getImageLink(
+                $product->link_rewrite,
+                $image_id['id_image'],
+                ImageType::getFormatedName("small")
+            );
+            $images[$key]['imageLazy'] = $this->context->link->getImageLink(
+                $product->link_rewrite,
+                $image_id['id_image'],
+                ImageType::getFormatedName("large")
+            );
+            $images[$key]['imageBig'] = $this->context->link->getImageLink(
+                $product->link_rewrite,
+                $image_id['id_image'],
+                ImageType::getFormatedName("large")
+            );
         }
 
         return $images;
@@ -109,7 +139,10 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_search'])) {
-            $sql->where("pl.`name` LIKE '%" . $data['filter_search'] . "%' OR pl.description LIKE '%" . $data['filter_search'] . "%' OR pl.description_short LIKE '%" . $data['filter_search'] . "%'");
+            $sql->where("pl.`name` LIKE '%" .
+            $data['filter_search'] . "%' OR pl.description LIKE '%" .
+            $data['filter_search'] . "%' OR pl.description_short LIKE '%" .
+            $data['filter_search'] . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -148,7 +181,10 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_search'])) {
-            $sql->where("pl.`name` LIKE '%" . $data['filter_search'] . "%' OR pl.description LIKE '%" . $data['filter_search'] . "%' OR pl.description_short LIKE '%" . $data['filter_search'] . "%'");
+            $sql->where("pl.`name` LIKE '%" .
+            $data['filter_search'] . "%' OR pl.description LIKE '%" .
+            $data['filter_search'] . "%' OR pl.description_short LIKE '%" .
+            $data['filter_search'] . "%'");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

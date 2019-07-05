@@ -1,5 +1,6 @@
 <?php
-/*
+/**
+ *
  * supported: PRESTABLOG
  *
  * Thanks to the team from PrestaBlog for providing the codebase
@@ -13,6 +14,14 @@
  *
  * You can always contact our support via https://vuefront.com/support
  * for assitance in integrating your blog module with our CMS Connect App.
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
  */
 
 include_once _PS_MODULE_DIR_ . 'prestablog/class/categories.class.php';
@@ -36,13 +45,15 @@ class ModelBlogCategory extends Model
 
     public function getImage($category_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . PrestaBlog::getT() . '/up-img/c/' . $category_id . '.jpg';
+        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' .
+         Configuration::get('prestablog_theme') . '/up-img/c/' . $category_id . '.jpg';
         return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
     }
 
     public function getImageLazy($category_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . PrestaBlog::getT() . '/up-img/c/thumb_' . $category_id . '.jpg';
+        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' .
+         Configuration::get('prestablog_theme') . '/up-img/c/thumb_' . $category_id . '.jpg';
         return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
     }
 

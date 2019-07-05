@@ -1,10 +1,22 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ModelCommonCustomer extends Model
 {
     public function updateCustomer($customer)
     {
-        $this->context->cookie->id_compare = isset($this->context->cookie->id_compare) ? $this->context->cookie->id_compare: CompareProduct::getIdCompareByIdCustomer($customer->id);
+        $this->context->cookie->id_compare = isset($this->context->cookie->id_compare) ?
+            $this->context->cookie->id_compare
+            : CompareProduct::getIdCompareByIdCustomer($customer->id);
         $this->context->cookie->id_customer = (int)($customer->id);
         $this->context->cookie->customer_lastname = $customer->lastname;
         $this->context->cookie->customer_firstname = $customer->firstname;
@@ -17,7 +29,11 @@ class ModelCommonCustomer extends Model
         // Add customer to the context
         $this->context->customer = $customer;
 
-        if (Configuration::get('PS_CART_FOLLOWING') && (empty($this->context->cookie->id_cart) || Cart::getNbProducts($this->context->cookie->id_cart) == 0) && $id_cart = (int)Cart::lastNoneOrderedCart($this->context->customer->id)) {
+        if (Configuration::get('PS_CART_FOLLOWING') &&
+            (
+                empty($this->context->cookie->id_cart) || Cart::getNbProducts($this->context->cookie->id_cart) == 0
+            )
+            && $id_cart = (int)Cart::lastNoneOrderedCart($this->context->customer->id)) {
             $this->context->cart = new Cart($id_cart);
         } else {
             $id_carrier = (int)$this->context->cart->id_carrier;

@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ResolverCommonContact extends Resolver
 {
@@ -7,12 +17,13 @@ class ResolverCommonContact extends Resolver
     public function get()
     {
         $this->load->model('common/store');
-
-        global $cookie;
-
+        
         $address = $this->context->shop->getAddress();
 
-        $format = '{company}' . "\n" . '{address_1}' . "\n" . '{address_2}' . "\n" . '{city} {postcode}' . "\n" . '{zone}' . "\n" . '{country}';
+        $format = '{company}' . "\n" . '{address_1}' .
+            "\n" . '{address_2}' . "\n" .
+            '{city} {postcode}' . "\n" .
+            '{zone}' . "\n" . '{country}';
 
         $find = array(
                 '{company}',
@@ -33,9 +44,9 @@ class ResolverCommonContact extends Resolver
             'address_2' => $address->address2,
             'city'      => $address->city,
             'postcode'  => $address->postcode,
-            'zone'      => State::getNameById($cookie->id_lang, $address->id_state),
-            'zone_code' => Country::getIsoById($cookie->id_lang, $address->id_state),
-            'country'   => Country::getNameById($cookie->id_lang, $address->id_country)
+            'zone'      => State::getNameById($this->context->cookie->id_lang, $address->id_state),
+            'zone_code' => Country::getIsoById($this->context->cookie->id_lang, $address->id_state),
+            'country'   => Country::getNameById($this->context->cookie->id_lang, $address->id_country)
         );
 
         $locations = array();
@@ -69,7 +80,15 @@ class ResolverCommonContact extends Resolver
         return array(
             'store' => Configuration::get('PS_SHOP_NAME'),
             'email' => Configuration::get('PS_SHOP_EMAIL'),
-            'address' => str_replace(array("\r\n", "\r", "\n"), ', ', preg_replace(array("/\r\r+/", "/\n\n+/"), ', ', trim(str_replace($find, $replace, $format)))),
+            'address' => str_replace(
+                array("\r\n", "\r", "\n"),
+                ', ',
+                preg_replace(
+                    array("/\r\r+/", "/\n\n+/"),
+                    ', ',
+                    trim(str_replace($find, $replace, $format))
+                )
+            ),
             'geocode' => '',
             'locations' => $locations,
             'telephone' => Configuration::get('PS_SHOP_PHONE'),
@@ -81,9 +100,9 @@ class ResolverCommonContact extends Resolver
 
     public function getFormattedAddress($store)
     {
-        global $cookie;
-
-        $format = '{address_1}' . "\n" . '{address_2}' . "\n" . '{city} {postcode}' . "\n" . '{zone}' . "\n" . '{country}';
+        $format = '{address_1}' . "\n" . '{address_2}' .
+             "\n" . '{city} {postcode}' .
+              "\n" . '{zone}' . "\n" . '{country}';
 
         $find = array(
             '{address_1}',
@@ -100,18 +119,25 @@ class ResolverCommonContact extends Resolver
             'address_2' => $store['address2'],
             'city'      => $store['city'],
             'postcode'  => $store['postcode'],
-            'zone'      => State::getNameById($cookie->id_lang, $store['id_state']),
-            'zone_code' => Country::getIsoById($cookie->id_lang, $store['id_state']),
-            'country'   => Country::getNameById($cookie->id_lang, $store['id_country'])
+            'zone'      => State::getNameById($this->context->cookie->id_lang, $store['id_state']),
+            'zone_code' => Country::getIsoById($this->context->cookie->id_lang, $store['id_state']),
+            'country'   => Country::getNameById($this->context->cookie->id_lang, $store['id_country'])
         );
 
-        return str_replace(array("\r\n", "\r", "\n"), ', ', preg_replace(array( "/\r\r+/", "/\n\n+/"), ', ', trim(str_replace($find, $replace, $format))));
+        return str_replace(
+            array("\r\n", "\r", "\n"),
+            ', ',
+            preg_replace(
+                array( "/\r\r+/", "/\n\n+/"),
+                ', ',
+                trim(str_replace($find, $replace, $format))
+            )
+        );
     }
 
     public function send($args)
     {
         try {
-            global $cookie;
             Mail::send(
                 (int)(Configuration::get('PS_LANG_DEFAULT')),
                 'vuefront_contact',

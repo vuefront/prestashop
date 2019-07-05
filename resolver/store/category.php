@@ -1,10 +1,24 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
-class ResolverStoreCategory extends Resolver {
-    public function get($args) {
-    	$this->load->model('store/category');
+class ResolverStoreCategory extends Resolver
+{
+    public function get($args)
+    {
+        $this->load->model('store/category');
         
         $category_info = $this->model_store_category->getCategory($args['id']);
+
+        $that = $this;
 
         return array(
             'id'          => $category_info['id'],
@@ -13,14 +27,14 @@ class ResolverStoreCategory extends Resolver {
             'parent_id'   => (string) $category_info['parent_id'],
             'image'       => $category_info['image'],
             'imageLazy'   => $category_info['imageLazy'],
-            'url' => function($root, $args) {
-                return $this->url(array(
+            'url' => function ($root, $args) use ($that) {
+                return $that->url(array(
                     'parent' => $root,
                     'args' => $args
                 ));
             },
-            'categories' => function($root, $args) {
-                return $this->child(array(
+            'categories' => function ($root, $args) use ($that) {
+                return $that->child(array(
                     'parent' => $root,
                     'args' => $args
                 ));
@@ -29,8 +43,9 @@ class ResolverStoreCategory extends Resolver {
         );
     }
 
-    public function getList($args) {
-    	$this->load->model('store/category');
+    public function getList($args)
+    {
+        $this->load->model('store/category');
         $filter_data = array(
             'sort' => $args['sort'],
             'order'   => $args['order']
@@ -66,7 +81,8 @@ class ResolverStoreCategory extends Resolver {
         );
     }
 
-    public function child($data) {
+    public function child($data)
+    {
         $this->load->model('store/category');
         $category = $data['parent'];
         $filter_data = array(
@@ -86,14 +102,15 @@ class ResolverStoreCategory extends Resolver {
         return $categories;
     }
 
-    public function url($data) {
+    public function url($data)
+    {
         $category_info = $data['parent'];
         $result = $data['args']['url'];
 
         $result = str_replace("_id", $category_info['id'], $result);
         $result = str_replace("_name", $category_info['name'], $result);
 
-        if($category_info['keyword'] != '') {
+        if ($category_info['keyword'] != '') {
             $result = '/'.$category_info['keyword'];
         }
 

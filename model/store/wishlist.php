@@ -1,14 +1,23 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
+
 class ModelStoreWishlist extends Model
 {
     public function getWishlist()
     {
-        global $cookie;
-
         $result = array();
 
-        if (isset($cookie->vf_wishlist)) {
-            $result = json_decode($cookie->vf_wishlist, true);
+        if (isset($this->context->cookie->vf_wishlist)) {
+            $result = json_decode($this->context->cookie->vf_wishlist, true);
         }
 
         return $result;
@@ -16,12 +25,10 @@ class ModelStoreWishlist extends Model
 
     public function addWishlist($product_id)
     {
-        global $cookie;
-
         $wishlist = array();
 
-        if (isset($cookie->vf_wishlist)) {
-            $wishlist = json_decode($cookie->vf_wishlist, true);
+        if (isset($this->context->cookie->vf_wishlist)) {
+            $wishlist = json_decode($this->context->cookie->vf_wishlist, true);
         }
 
 
@@ -29,17 +36,15 @@ class ModelStoreWishlist extends Model
             $wishlist[] = (int)$product_id;
         }
 
-        $cookie->vf_wishlist = json_encode($wishlist);
+        $this->context->cookie->vf_wishlist = json_encode($wishlist);
     }
 
     public function deleteWishlist($product_id)
     {
-        global $cookie;
-
         $wishlist = array();
 
-        if (isset($cookie->vf_wishlist)) {
-            $wishlist = json_decode($cookie->vf_wishlist, true);
+        if (isset($this->context->cookie->vf_wishlist)) {
+            $wishlist = json_decode($this->context->cookie->vf_wishlist, true);
         }
    
         if (!empty($wishlist)) {
@@ -50,6 +55,6 @@ class ModelStoreWishlist extends Model
             }
         }
 
-        $cookie->vf_wishlist = json_encode($wishlist);
+        $this->context->cookie->vf_wishlist = json_encode($wishlist);
     }
 }

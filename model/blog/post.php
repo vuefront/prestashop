@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * supported: PRESTABLOG
  *
  * Thanks to the team from PrestaBlog for providing the codebase
@@ -13,8 +13,16 @@
  *
  * You can always contact our support via https://vuefront.com/support
  * for assitance in integrating your blog module with our CMS Connect App.
+ *
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
  */
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 include_once _PS_MODULE_DIR_ . 'prestablog/class/news.class.php';
 
@@ -37,13 +45,15 @@ class ModelBlogPost extends Model
 
     public function getImage($post_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . PrestaBlog::getT() . '/up-img/' . $post_id . '.jpg';
+        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+             '/up-img/' . $post_id . '.jpg';
         return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
     }
 
     public function getImageLazy($post_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . PrestaBlog::getT() . '/up-img/thumb_' . $post_id . '.jpg';
+        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+             '/up-img/thumb_' . $post_id . '.jpg';
         return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
     }
 
@@ -77,7 +87,8 @@ class ModelBlogPost extends Model
         }
 
         if (!empty($data['filter_post_ids'])) {
-            $sql->where('p.`id_prestablog_news` IN ' . "('" . impload("','", expload(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
+            $sql->where('p.`id_prestablog_news` IN ' . "('" .
+            implode("','", explode(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
         }
 
         if (!empty($data['filter_description']) && !empty($data['filter_name'])) {
@@ -111,11 +122,13 @@ class ModelBlogPost extends Model
         }
 
         if (!empty($data['filter_post_ids'])) {
-            $sql->where('p.`id_prestablog_news` IN ' . "('" . impload("','", expload(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
+            $sql->where('p.`id_prestablog_news` IN ' . "('" .
+            implode("','", explode(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
         }
 
         if (!empty($data['filter_description']) && !empty($data['filter_name'])) {
-            $sql->where("pnl.`title` = '%" . $data['filter_name'] . "%' OR pnl.content = '%" . $data['filter_description'] . "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
+            $sql->where("pnl.`title` = '%" . $data['filter_name'] . "%' OR pnl.content = '%" .
+            $data['filter_description'] . "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
         }
 
         //tags are not yet implemented

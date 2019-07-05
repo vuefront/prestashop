@@ -1,4 +1,15 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
+
 final class Loader
 {
     protected $registry;
@@ -64,15 +75,15 @@ final class Loader
             
             $route = preg_replace('/[^a-zA-Z0-9_\/]/', '', (string)$route);
 
-            $class = 'Model' . preg_replace('/[^a-zA-Z0-9]/', '', substr($route, 0, strrpos($route, '/')));
+            $class = 'Model' . preg_replace('/[^a-zA-Z0-9]/', '', Tools::substr($route, 0, strrpos($route, '/')));
                 
-            $key = substr($route, 0, strrpos($route, '/'));
+            $key = Tools::substr($route, 0, strrpos($route, '/'));
                 
             if (!isset($model[$key])) {
                 $model[$key] = new $class($registry);
             }
                 
-            $method = substr($route, strrpos($route, '/') + 1);
+            $method = Tools::substr($route, strrpos($route, '/') + 1);
                 
             $callable = array($model[$key], $method);
     

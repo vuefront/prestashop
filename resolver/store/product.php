@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ResolverStoreProduct extends Resolver
 {
@@ -18,12 +28,22 @@ class ResolverStoreProduct extends Resolver
 
         $images = Product::getCover($args['id']);
         if (!empty($images['id_image'])) {
-            $image = $this->context->link->getImageLink($product->link_rewrite, $images['id_image'], ImageType::getFormatedName("large"));
-            $imageLazy = $this->context->link->getImageLink($product->link_rewrite, $images['id_image'], ImageType::getFormatedName("small"));
+            $image = $this->context->link->getImageLink(
+                $product->link_rewrite,
+                $images['id_image'],
+                ImageType::getFormatedName("large")
+            );
+            $imageLazy = $this->context->link->getImageLink(
+                $product->link_rewrite,
+                $images['id_image'],
+                ImageType::getFormatedName("small")
+            );
         } else {
             $image = '';
             $imageLazy = '';
         }
+
+        $that = $this;
 
         return array(
             'id'               => $product->id,
@@ -39,32 +59,32 @@ class ResolverStoreProduct extends Resolver
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
             'keyword'          => $product->link_rewrite,
-            'images' => function ($root, $args) {
-                return $this->getImages(array(
+            'images' => function ($root, $args) use ($that) {
+                return $that->getImages(array(
                     'parent' => $root,
                     'args' => $args
                 ));
             },
-            'products' => function ($root, $args) {
-                return $this->getRelatedProducts(array(
+            'products' => function ($root, $args) use ($that) {
+                return $that->getRelatedProducts(array(
                     'parent' => $root,
                     'args' => $args
                 ));
             },
-            'attributes' => function ($root, $args) {
-                return $this->getAttributes(array(
+            'attributes' => function ($root, $args) use ($that) {
+                return $that->getAttributes(array(
                     'parent' => $root,
                     'args' => $args
                 ));
             },
-            'reviews' => function ($root, $args) {
-                return $this->load->resolver('store/review/get', array(
+            'reviews' => function ($root, $args) use ($that) {
+                return $that->load->resolver('store/review/get', array(
                     'parent' => $root,
                     'args' => $args
                 ));
             },
-            'options' => function ($root, $args) {
-                return $this->getOptions(array(
+            'options' => function ($root, $args) use ($that) {
+                return $that->getOptions(array(
                     'parent' => $root,
                     'args' => $args
                 ));

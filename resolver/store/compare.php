@@ -1,20 +1,34 @@
-<?php 
+<?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
-class ResolverStoreCompare extends Resolver {
-    public function add($args) {
+class ResolverStoreCompare extends Resolver
+{
+    public function add($args)
+    {
         $this->load->model('store/compare');
 
         $this->model_store_compare->addCompare($args['id']);
 
         return $this->get();
     }
-    public function remove($args) {
+    public function remove($args)
+    {
         $this->load->model('store/compare');
         $this->model_store_compare->deleteCompare($args['id']);
 
         return $this->get();
     }
-    public function get($args = array()) {
+    public function get()
+    {
         $this->load->model('store/compare');
         $compare = array();
         $results = $this->model_store_compare->getCompare();

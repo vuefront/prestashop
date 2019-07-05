@@ -11,7 +11,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class d_vuefront extends Module
+class d_Vuefront extends Module
 {
 
     /** @var array Use to store the configuration from database */
@@ -56,7 +56,7 @@ class d_vuefront extends Module
     public function uninstall()
     {
         return Configuration::deleteByName($this->name) &&
-        parent::uninstall() && 
+        parent::uninstall() &&
         $this->deleteAdminTab();
     }
 
@@ -80,7 +80,8 @@ class d_vuefront extends Module
         $this->context->controller->addJS($this->_path . '/views/js/clipboard.min.js');
 
         $this->context->smarty->assign(array(
-            'catalog' => Tools::getHttpHost(true).__PS_BASE_URI__.'index.php?controller=graphql&module=d_vuefront&fc=module',
+            'catalog' => Tools::getHttpHost(true).
+            __PS_BASE_URI__.'index.php?controller=graphql&module=vuefront&fc=module',
             'blog' => Module::isInstalled('prestablog')
         ));
 

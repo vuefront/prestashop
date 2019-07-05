@@ -1,4 +1,14 @@
 <?php
+/**
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ */
 
 class ModelCommonPage extends Model
 {
@@ -38,7 +48,9 @@ class ModelCommonPage extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_title']) && !empty($data['filter_description'])) {
-            $sql->where("cl.`meta_title` = '%" . $data['filter_title'] . "%' OR cl.content = '%" . $data['filter_description'] . "%' OR cl.meta_description = '%" . $data['filter_description'] . "%'");
+            $sql->where("cl.`meta_title` = '%" . $data['filter_title'] .
+            "%' OR cl.content = '%" . $data['filter_description'] .
+            "%' OR cl.meta_description = '%" . $data['filter_description'] . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -61,7 +73,10 @@ class ModelCommonPage extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_title']) && !empty($data['filter_description'])) {
-            $sql->where("cl.`meta_title` = '%" . $data['filter_title'] . "%' OR cl.content = '%" . $data['filter_description'] . "%' OR cl.meta_description = '%" . $data['filter_description'] . "%'");
+            $sql->where("cl.`meta_title` = '%" .
+            $data['filter_title'] . "%' OR cl.content = '%" .
+             $data['filter_description'] . "%' OR cl.meta_description = '%" .
+             $data['filter_description'] . "%'");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

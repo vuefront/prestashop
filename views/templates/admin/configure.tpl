@@ -1,3 +1,14 @@
+{*
+ * 2019 (c) VueFront
+ *
+ * MODULE VueFront
+ *
+ * @author    VueFront
+ * @copyright Copyright (c) permanent, VueFront
+ * @license   MIT
+ * @version   0.1.0
+ *}
+
 <div class="panel">
     <div class="module-content">
         <div class="text-center module-content__image">
@@ -7,7 +18,7 @@
             <div class="module-content__row">
                 <h3 class="text-center mb-3">{l s='CMS Connect URL' mod='d_vuefront'}</h3>
                 <div class="input-group mb-2">
-                    <input id="connect_url" class="form-control" type="text" value="{$catalog}" readonly>
+                    <input id="connect_url" class="form-control" type="text" value="{$catalog|escape:'htmlall':'UTF-8'}" readonly>
                     <div class="input-group-btn">
                         <span class="btn btn-primary clipboard" data-clipboard-target="#connect_url">{l s='copy' mod='d_vuefront'}</span>
                     </div>
@@ -29,7 +40,7 @@
                     <a class="btn btn-danger" href="https://addons.prestashop.com/ru/blog-forum-news/4731-professional-blog.html" target="_blank">{l s='Blog disabled' mod='d_vuefront'}</a>
                 {/if}
                  <p class="module-content__description">
-                        {l s='VueFront relies on the'}
+                        {l s='VueFront relies on the' mod='d_vuefront'}
                         <a href="https://addons.prestashop.com/ru/blog-forum-news/4731-professional-blog.html" target="_blank">{l s='Blog Module' mod='d_vuefront'}</a>
                         {l s='to implement blog support. The blog feature is optional and VueFront will work fine without it.' mod='d_vuefront'}
                     </p>
