@@ -8,7 +8,14 @@
 <h3 align="center">CMS Connect App for PrestaShop
 </h3>
 
-VueFront is a <a href="//vuejs.org">Vue-powered</a> agnostic frontend web app for your old fashioned Blog and Ecommerce site. 
+<p align="center">
+Vue powered CMS agnostic frontend framework for your old-fashioned Blog and Ecommerce site.</p>
+
+<p align="center">
+Show your :heart: - give us a :star: <br/> 
+Help us grow this project to be the best it can be!
+  </p>
+
 
 PrestaShop is an efficient and innovative e-commerce solution with all the features you need to create an online store and grow your business.
 
