@@ -31,10 +31,10 @@ class ModelBlogPost extends Model
     public function getPost($post_id)
     {
         $post = new NewsClass((int) $post_id, (int) $this->context->language->id, $this->context->shop->id);
-
         return array(
             'id' => $post->id,
             'title' => $post->title,
+            'datePublished' => $post->date,
             'description' => html_entity_decode($post->content, ENT_QUOTES, 'UTF-8'),
             'shortDescription' => strip_tags(html_entity_decode($post->paragraph, ENT_QUOTES, 'UTF-8')),
             'image' => $this->getImage($post->id),
@@ -45,16 +45,26 @@ class ModelBlogPost extends Model
 
     public function getImage($post_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+        if (file_exists(_PS_ROOT_DIR_. '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+             '/up-img/' . $post_id . '.jpg')) {
+            $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/' . $post_id . '.jpg';
-        return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
+            return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
+        } else {
+            return '';
+        }
     }
 
     public function getImageLazy($post_id)
     {
-        $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+        if (file_exists(_PS_ROOT_DIR_. '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+             '/up-img/thumb_' . $post_id . '.jpg')) {
+            $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/thumb_' . $post_id . '.jpg';
-        return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
+            return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
+        } else {
+            return '';
+        }
     }
 
     public function getPosts($data = array())
@@ -137,5 +147,35 @@ class ModelBlogPost extends Model
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         return $result['count(*)'];
+    }
+
+    public function getNextPost($post_id)
+    {
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('prestablog_news', 'pn');
+        $sql->leftJoin('prestablog_news_lang', 'pnl', 'pnl.`id_prestablog_news` = pn.`id_prestablog_news`');
+        $sql->where('pn.`actif` = 1');
+        $sql->where('pnl.`id_lang` = ' . (int) $this->context->language->id);
+        $sql->orderBy('pn.date ASC');
+        $sql->where("pn.id_prestablog_news > '" . (int)$post_id . "'");
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+        return $result;
+    }
+    public function getPrevPost($post_id)
+    {
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('prestablog_news', 'pn');
+        $sql->leftJoin('prestablog_news_lang', 'pnl', 'pnl.`id_prestablog_news` = pn.`id_prestablog_news`');
+        $sql->where('pn.`actif` = 1');
+        $sql->where('pnl.`id_lang` = ' . (int) $this->context->language->id);
+        $sql->orderBy('pn.id_prestablog_news DESC');
+        $sql->where("pn.id_prestablog_news < '" . (int)$post_id . "'");
+
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+        return $result;
     }
 }

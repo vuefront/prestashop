@@ -76,7 +76,8 @@ type CategoryResult {
 }
 
 type Currency {
-  title: String
+  title: String @deprecated(reason: "Changed to name!")
+  name: String
   code: String
   symbol_left: String
   symbol_right: String
@@ -120,7 +121,8 @@ type OptionValue {
 
 type Page {
   id: ID
-  title: String
+  title: String @deprecated(reason: "Changed to name!")
+  name: String
   description: String
   keyword: String
   sort_order: Int
@@ -137,15 +139,26 @@ type PageResult {
   totalElements: Int
 }
 
+type postReviewResult {
+  content: [postReview]
+  totalElements: Int
+}
+
 type Post {
   id: ID
-  title: String
+  title: String @deprecated(reason: "Changed to name!")
+  name: String
   shortDescription: String
   description: String
   image: String
   imageLazy: String
   keyword: String
-  reviews: [postReview]
+  rating: Float
+  reviews: postReviewResult
+  categories: [categoryBlog]
+  datePublished: String
+  next: Post
+  prev: Post
 }
 
 type PostResult {

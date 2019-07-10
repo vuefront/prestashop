@@ -40,6 +40,9 @@ class ResolverBlogReview extends Resolver
         $this->load->model('blog/review');
         $result  = $this->model_blog_review->getReviews($post['id']);
 
-        return $result;
+        return array(
+            'content'=> $result,
+            'totalElements' => count($result)
+        );
     }
 }

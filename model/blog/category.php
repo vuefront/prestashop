@@ -118,4 +118,15 @@ class ModelBlogCategory extends Model
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         return $result['count(*)'];
     }
+
+    public function getCategoryByPostId($post_id)
+    {
+        $categories = CorrespondancesCategoriesClass::getCategoriesListeName(
+            (int)$post_id,
+            (int)$this->context->cookie->id_lang,
+            1
+        );
+
+        return $categories;
+    }
 }

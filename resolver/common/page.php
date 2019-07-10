@@ -18,11 +18,12 @@ class ResolverCommonPage extends Resolver
         $page_info = $this->model_common_page->getPage($args['id']);
 
         return array(
-            'id' => $page_info['id'],
-            'title' => $page_info['title'],
+            'id'          => $page_info['id'],
+            'name'        => $page_info['title'],
+            'title'       => $page_info['title'],
             'description' => $page_info['description'],
-            'sort_order' => (int)$page_info['sort_order'],
-            'keyword' => $page_info['keyword']
+            'sort_order'  => (int)$page_info['sort_order'],
+            'keyword'     => $page_info['keyword']
         );
     }
 
