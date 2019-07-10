@@ -134,7 +134,7 @@ class ResolverBlogPost extends Resolver
         }
     }
 
-    public function prev($args)
+    public function next($args)
     {
         if ($this->status) {
             $this->load->model('blog/post');
@@ -149,7 +149,7 @@ class ResolverBlogPost extends Resolver
         }
     }
 
-    public function next($args)
+    public function prev($args)
     {
         if ($this->status) {
             $this->load->model('blog/post');
