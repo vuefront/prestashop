@@ -31,6 +31,38 @@ class ModelStoreCategory extends Model
             $thumb = $this->context->link->getCatImageLink($category->link_rewrite, $category->id_image);
             $thumbLazy = $this->context->link->getCatImageLink($category->link_rewrite, $category->id_image);
         }
+        $dispatcher = Dispatcher::getInstance();
+
+        $params = array();
+
+        $params['id'] = $category->id;
+        $params['rewrite'] = $category->link_rewrite;
+
+        if ($dispatcher->hasKeyword(
+            'category_rule',
+            $this->context->cookie->id_lang,
+            'meta_keywords',
+            $this->context->cookie->id_shop
+        )) {
+            $params['meta_keywords'] = Tools::str2url($category->getFieldByLang('meta_keywords'));
+        }
+        if ($dispatcher->hasKeyword(
+            'category_rule',
+            $this->context->cookie->id_lang,
+            'meta_title',
+            $this->context->cookie->id_shop
+        )) {
+            $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
+        }
+
+        $url = Dispatcher::getInstance()->createUrl(
+            'category_rule',
+            $this->context->cookie->id_lang,
+            $params,
+            true,
+            '',
+            $this->context->cookie->id_shop
+        );
 
         return array(
             'id' => $category->id,
@@ -39,7 +71,7 @@ class ModelStoreCategory extends Model
             'parent_id' => $category->id_parent,
             'image' => $thumb,
             'imageLazy' => $thumbLazy,
-            'keyword' => $category->link_rewrite
+            'keyword' => $url
         );
     }
 

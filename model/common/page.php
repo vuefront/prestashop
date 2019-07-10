@@ -16,12 +16,28 @@ class ModelCommonPage extends Model
     {
         $page = new CMS($page_id, $this->context->language->id, $this->context->shop->id);
 
+        $dispatcher = Dispatcher::getInstance();
+        $params = array();
+        $params['id'] = $page->id;
+        $params['rewrite'] = $page->link_rewrite;
+        $params['meta_keywords'] = Tools::str2url($page->meta_keywords);
+        $params['meta_title'] = Tools::str2url($page->meta_title);
+
+        $url = $dispatcher->createUrl(
+            'cms_category_rule',
+            $this->context->cookie->id_lang,
+            $params,
+            true,
+            '',
+            $this->context->cookie->id_shop
+        );
+
         return array(
             'id' => $page->id,
             'title' => $page->meta_title,
             'description' => html_entity_decode($page->content, ENT_QUOTES, 'UTF-8'),
             'sort_order' => (int) $page->position,
-            'keyword' => $page->link_rewrite
+            'keyword' => $url
         );
     }
 

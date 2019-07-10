@@ -45,6 +45,18 @@ class ResolverStoreProduct extends Resolver
 
         $that = $this;
 
+        $link = $this->context->link->getProductLink(
+            $product,
+            null,
+            null,
+            null,
+            null,
+            null,
+            0,
+            true
+        );
+
+        $link = str_replace($this->context->link->getPageLink(''), '', $link);
         return array(
             'id'               => $product->id,
             'name'             => $product->name,
@@ -58,7 +70,7 @@ class ResolverStoreProduct extends Resolver
             'imageLazy'        => $imageLazy,
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
-            'keyword'          => $product->link_rewrite,
+            'keyword'          => $link,
             'images' => function ($root, $args) use ($that) {
                 return $that->getImages(array(
                     'parent' => $root,
@@ -179,6 +191,11 @@ class ResolverStoreProduct extends Resolver
         $args = $data['args'];
         
         $result = $this->model_store_product->getProductImages($product['id'], $args['limit']);
+        $images = Product::getCover($product['id']);
+
+        $result = array_filter($result, function ($value) use ($images) {
+            return $value['id_image'] != $images['id_image'];
+        });
 
         return $result;
     }

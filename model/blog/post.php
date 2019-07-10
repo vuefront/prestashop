@@ -31,6 +31,7 @@ class ModelBlogPost extends Model
     public function getPost($post_id)
     {
         $post = new NewsClass((int) $post_id, (int) $this->context->language->id, $this->context->shop->id);
+
         return array(
             'id' => $post->id,
             'title' => $post->title,
