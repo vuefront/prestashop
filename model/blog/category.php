@@ -121,12 +121,18 @@ class ModelBlogCategory extends Model
 
     public function getCategoryByPostId($post_id)
     {
-        $categories = CorrespondancesCategoriesClass::getCategoriesListeName(
-            (int)$post_id,
-            (int)$this->context->cookie->id_lang,
-            1
-        );
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+        SELECT    cl.`title`, cl.`link_rewrite`, cc.`categorie`
+        FROM `'.bqSQL(_DB_PREFIX_.'prestablog_correspondancecategorie').'` as cc
+        LEFT JOIN `'.bqSQL(_DB_PREFIX_).'prestablog_categorie` as c
+            ON (cc.`categorie` = c.`id_prestablog_categorie`)
+        LEFT JOIN `'.bqSQL(_DB_PREFIX_).'prestablog_categorie_lang` as cl
+            ON (cc.`categorie` = cl.`id_prestablog_categorie`)
+        WHERE cc.`news` = '.(int)$post_id.'
+            AND cl.`id_lang` = '.(int)$this->context->cookie->id_lang.'
+            AND c.`actif` = 1
+        ORDER BY cl.`title`');
 
-        return $categories;
+        return $result;
     }
 }

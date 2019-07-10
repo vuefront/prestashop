@@ -38,7 +38,11 @@ class ResolverBlogPost extends Resolver
                 'image'            => $post['image'],
                 'imageLazy'        => $post['imageLazy'],
                 'rating'           => null,
-                'datePublished'    => iconv(mb_detect_encoding(strftime($date_format, strtotime($post['datePublished']))), "utf-8//IGNORE", strftime($date_format, strtotime($post['datePublished']))),
+                'datePublished'    => iconv(
+                    mb_detect_encoding(strftime($date_format, strtotime($post['datePublished']))),
+                    "utf-8//IGNORE",
+                    strftime($date_format, strtotime($post['datePublished']))
+                ),
                 'reviews' => function ($root, $args) use ($that) {
                     return $that->load->resolver('blog/review/get', array(
                         'parent' => $root,
@@ -119,7 +123,10 @@ class ResolverBlogPost extends Resolver
             $result = $this->model_blog_category->getCategoryByPostId($post['id']);
             $categories = array();
             foreach ($result as $category) {
-                $categories[] =$this->load->resolver('blog/category/get', array('id' => $category['id_prestablog_categorie']));
+                $categories[] =$this->load->resolver(
+                    'blog/category/get',
+                    array('id' => $category['categorie'])
+                );
             }
             return $categories;
         } else {
