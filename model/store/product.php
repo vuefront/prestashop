@@ -134,7 +134,7 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . pSQL(implode("','", $data['filter_ids'])) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_ids']) . "')");
         }
 
         if (!empty($data['filter_special'])) {
@@ -172,7 +172,7 @@ class ModelStoreProduct extends Model
             $sql->where('p.`id_category_default` = ' . (int)$data['filter_category_id']);
         }
         if (!empty($data['filter_product_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . pSQL(implode("','", $data['filter_product_ids'])) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_product_ids']) . "')");
         }
 
         if (!empty($data['filter_special'])) {
