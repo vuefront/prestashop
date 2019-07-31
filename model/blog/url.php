@@ -1,4 +1,4 @@
-9<?php
+<?php
 /**
  * 2019 (c) VueFront
  *
