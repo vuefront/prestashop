@@ -24,6 +24,7 @@
  *
  * @version   0.1.0
  */
+
 include_once _PS_MODULE_DIR_ . 'prestablog/class/news.class.php';
 
 class ModelBlogPost extends Model

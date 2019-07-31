@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 class ResolverStoreCategory extends Resolver
 {
     public function get($args)

@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
 
 class ModelStoreCategory extends Model

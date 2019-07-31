@@ -28,31 +28,19 @@ class ModelBlogUrl extends Model
         $ok_rewrite_year = '';
         $ok_rewrite_month = '';
 
-        $ko_rewrite = '';
-        $ko_rewrite_id = '';
-        $ko_rewrite_do = '';
-        $ko_rewrite_cat = '';
-        $ko_rewrite_page = '';
-        $ko_rewrite_year = '';
-        $ko_rewrite_month = '';
-
         if (isset($params['do']) && $params['do'] != '') {
-            $ko_rewrite_do = 'do='.$params['do'];
             $ok_rewrite_do = $params['do'];
             $param += 1;
         }
         if (isset($params['id']) && $params['id'] != '') {
-            $ko_rewrite_id = '&id='.$params['id'];
             $ok_rewrite_id = '-n'.$params['id'];
             $param += 1;
         }
         if (isset($params['c']) && $params['c'] != '') {
-            $ko_rewrite_cat = '&c='.$params['c'];
             $ok_rewrite_cat = '-c'.$params['c'];
             $param += 1;
         }
         if (isset($params['start']) && isset($params['p']) && $params['start'] != '' && $params['p'] != '') {
-            $ko_rewrite_page = '&start='.$params['start'].'&p='.$params['p'];
             $ok_rewrite_page = $params['start'].'p'.$params['p'];
             $param += 1;
         }
@@ -74,12 +62,10 @@ class ModelBlogUrl extends Model
             $param += 1;
         }
         if (isset($params['y']) && $params['y'] != '') {
-            $ko_rewrite_year = '&y='.$params['y'];
             $ok_rewrite_year = 'y'.$params['y'];
             $param += 1;
         }
         if (isset($params['m']) && $params['m'] != '') {
-            $ko_rewrite_month = '&m='.$params['m'];
             $ok_rewrite_month = '-m'.$params['m'];
             $param += 1;
         }
@@ -93,21 +79,14 @@ class ModelBlogUrl extends Model
             $ok_rewrite = $base_url_blog.'/'.$ok_rewrite_do.$ok_rewrite_categorie.$ok_rewrite_page;
             $ok_rewrite .= $ok_rewrite_year.$ok_rewrite_month.$ok_rewrite_titre.$ok_rewrite_seo;
             $ok_rewrite .= $ok_rewrite_cat.$ok_rewrite_id;
-            $ko_rewrite = '?fc=module&module=prestablog&controller=blog&'.ltrim(
-                $ko_rewrite_do.$ko_rewrite_id.$ko_rewrite_cat.$ko_rewrite_page.$ko_rewrite_year.$ko_rewrite_month,
-                '&'
-            );
         } elseif (isset($params['rss'])) {
             if ($params['rss'] == 'all') {
                 $ok_rewrite = 'rss';
-                $ko_rewrite = '?fc=module&module=prestablog&controller=rss';
             } else {
                 $ok_rewrite = 'rss/'.$params['rss'];
-                $ko_rewrite = '?fc=module&module=prestablog&controller=rss&rss='.$params['rss'];
             }
         } else {
             $ok_rewrite = $base_url_blog;
-            $ko_rewrite = '?fc=module&module=prestablog&controller=blog';
         }
 
         if (!isset($params['id_lang'])) {

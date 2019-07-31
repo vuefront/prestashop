@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 class ResolverCommonPage extends Resolver
 {
     public function get($args)

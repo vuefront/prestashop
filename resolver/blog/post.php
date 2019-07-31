@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 class ResolverBlogPost extends Resolver
 {
     public function __construct($registry)
@@ -107,11 +108,11 @@ class ResolverBlogPost extends Resolver
                 'content' => $posts,
                 'first' => $args['page'] === 1,
                 'last' => $args['page'] === ceil($product_total / $args['size']),
-                'number' => (int) $args['page'],
+                'number' => (int)$args['page'],
                 'numberOfElements' => count($posts),
-                'size' => (int) $args['size'],
-                'totalPages' => (int) ceil($product_total / $args['size']),
-                'totalElements' => (int) $product_total,
+                'size' => (int)$args['size'],
+                'totalPages' => (int)ceil($product_total / $args['size']),
+                'totalElements' => (int)$product_total,
             );
         } else {
             return array(

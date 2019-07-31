@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 class ResolverCommonHome extends Resolver
 {
     public function get()

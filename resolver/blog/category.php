@@ -10,6 +10,7 @@
  *
  * @version   0.1.0
  */
+
 class ResolverBlogCategory extends Resolver
 {
     private $status = false;
