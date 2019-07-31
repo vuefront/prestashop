@@ -42,7 +42,7 @@ class ModelCommonCountry extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_name'])) {
-            $sql->where("cl.`name` LIKE '%" . $data['filter_name']. "%'");
+            $sql->where("cl.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -65,7 +65,7 @@ class ModelCommonCountry extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_name'])) {
-            $sql->where("cl.`name` LIKE '%" . $data['filter_name']. "%'");
+            $sql->where("cl.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
 
 

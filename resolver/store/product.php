@@ -71,6 +71,11 @@ class ResolverStoreProduct extends Resolver
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
             'keyword'          => $link,
+            'meta'             => array(
+                'title' => $product->meta_title,
+                'description' => $product->meta_description,
+                'keyword' => $product->meta_keywords
+            ),
             'images' => function ($root, $args) use ($that) {
                 return $that->getImages(array(
                     'parent' => $root,

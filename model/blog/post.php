@@ -21,9 +21,9 @@
  * @author    VueFront
  * @copyright Copyright (c) permanent, VueFront
  * @license   MIT
+ *
  * @version   0.1.0
  */
-
 include_once _PS_MODULE_DIR_ . 'prestablog/class/news.class.php';
 
 class ModelBlogPost extends Model
@@ -37,7 +37,7 @@ class ModelBlogPost extends Model
         $url = $this->model_blog_url->link(array(
             'id' => $post->id,
             'seo' => $post->link_rewrite,
-            'titre' => $post->title
+            'titre' => $post->title,
         ));
 
         return array(
@@ -48,16 +48,22 @@ class ModelBlogPost extends Model
             'shortDescription' => strip_tags(html_entity_decode($post->paragraph, ENT_QUOTES, 'UTF-8')),
             'image' => $this->getImage($post->id),
             'imageLazy' => $this->getImageLazy($post->id),
-            'keyword' => $url
+            'keyword' => $url,
+            'meta' => array(
+                'title' => $post->meta_title,
+                'description' => $post->meta_description,
+                'keyword' => $post->meta_keywords,
+            ),
         );
     }
 
     public function getImage($post_id)
     {
-        if (file_exists(_PS_ROOT_DIR_. '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+        if (file_exists(_PS_ROOT_DIR_ . '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/' . $post_id . '.jpg')) {
             $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/' . $post_id . '.jpg';
+
             return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
         } else {
             return '';
@@ -66,10 +72,11 @@ class ModelBlogPost extends Model
 
     public function getImageLazy($post_id)
     {
-        if (file_exists(_PS_ROOT_DIR_. '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
+        if (file_exists(_PS_ROOT_DIR_ . '/modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/thumb_' . $post_id . '.jpg')) {
             $uri = __PS_BASE_URI__ . 'modules/prestablog/views/img/' . Configuration::get('prestablog_theme') .
              '/up-img/thumb_' . $post_id . '.jpg';
+
             return $this->context->link->protocol_content . Tools::getMediaServer($uri) . $uri;
         } else {
             return '';
@@ -80,15 +87,15 @@ class ModelBlogPost extends Model
     {
         $sort = 'pn.`id_prestablog_news`';
         if ($data['sort'] == 'sort_order') {
-            $sort = "pn.`id_prestablog_news`";
+            $sort = 'pn.`id_prestablog_news`';
         }
 
         if ($data['sort'] == 'date_added') {
-            $sort = "pn.`date`";
+            $sort = 'pn.`date`';
         }
 
         if ($data['sort'] == 'name') {
-            $sort = "pnl.`title`";
+            $sort = 'pnl.`title`';
         }
 
         $sql = new DbQuery();
@@ -107,13 +114,13 @@ class ModelBlogPost extends Model
 
         if (!empty($data['filter_post_ids'])) {
             $sql->where('p.`id_prestablog_news` IN ' . "('" .
-            implode("','", explode(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
+            pSQL(implode("','", explode(',', preg_replace('/\s+/', ' ', $data['filter_post_ids'])))) . "')");
         }
 
         if (!empty($data['filter_description']) && !empty($data['filter_name'])) {
-            $sql->where("pnl.`title` = '%" . $data['filter_name'] .
-            "%' OR pnl.content = '%" . $data['filter_description'] .
-            "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
+            $sql->where("pnl.`title` = '%" . pSQL($data['filter_name']) .
+            "%' OR pnl.content = '%" . pSQL($data['filter_description']) .
+            "%' OR pnl.paragraph = '%" . pSQL($data['filter_description']) . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -144,17 +151,18 @@ class ModelBlogPost extends Model
 
         if (!empty($data['filter_post_ids'])) {
             $sql->where('p.`id_prestablog_news` IN ' . "('" .
-            implode("','", explode(",", preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
+            implode("','", explode(',', preg_replace('/\s+/', ' ', $data['filter_post_ids']))) . "')");
         }
 
         if (!empty($data['filter_description']) && !empty($data['filter_name'])) {
-            $sql->where("pnl.`title` = '%" . $data['filter_name'] . "%' OR pnl.content = '%" .
-            $data['filter_description'] . "%' OR pnl.paragraph = '%" . $data['filter_description'] . "%'");
+            $sql->where("pnl.`title` = '%" . pSQL($data['filter_name']) . "%' OR pnl.content = '%" .
+            pSQL($data['filter_description']) . "%' OR pnl.paragraph = '%" . pSQL($data['filter_description']) . "%'");
         }
 
         //tags are not yet implemented
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
         return $result['count(*)'];
     }
 
@@ -167,11 +175,12 @@ class ModelBlogPost extends Model
         $sql->where('pn.`actif` = 1');
         $sql->where('pnl.`id_lang` = ' . (int) $this->context->language->id);
         $sql->orderBy('pn.date ASC');
-        $sql->where("pn.id_prestablog_news > '" . (int)$post_id . "'");
+        $sql->where("pn.id_prestablog_news > '" . (int) $post_id . "'");
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 
         return $result;
     }
+
     public function getPrevPost($post_id)
     {
         $sql = new DbQuery();
@@ -181,7 +190,7 @@ class ModelBlogPost extends Model
         $sql->where('pn.`actif` = 1');
         $sql->where('pnl.`id_lang` = ' . (int) $this->context->language->id);
         $sql->orderBy('pn.id_prestablog_news DESC');
-        $sql->where("pn.id_prestablog_news < '" . (int)$post_id . "'");
+        $sql->where("pn.id_prestablog_news < '" . (int) $post_id . "'");
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 

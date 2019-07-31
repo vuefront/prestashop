@@ -7,9 +7,9 @@
  * @author    VueFront
  * @copyright Copyright (c) permanent, VueFront
  * @license   MIT
+ *
  * @version   0.1.0
  */
-
 use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
 
 class ModelStoreCategory extends Model
@@ -71,7 +71,12 @@ class ModelStoreCategory extends Model
             'parent_id' => $category->id_parent,
             'image' => $thumb,
             'imageLazy' => $thumbLazy,
-            'keyword' => $url
+            'keyword' => $url,
+            'meta' => array(
+                'title' => $category->meta_title,
+                'description' => $category->meta_description,
+                'keyword' => $category->meta_keywords,
+            ),
         );
     }
 
@@ -103,7 +108,7 @@ class ModelStoreCategory extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if ($parent_id) {
-            $sql->where('c.`id_parent` = ' . $parent_id);
+            $sql->where('c.`id_parent` = ' . (int)$parent_id);
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -138,10 +143,11 @@ class ModelStoreCategory extends Model
         $sql->where('cl.`id_lang` = ' . (int) $language_id);
 
         if ($parent_id) {
-            $sql->where('c.`id_parent` = ' . $parent_id);
+            $sql->where('c.`id_parent` = ' . (int)$parent_id);
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
         return $result['count(*)'];
     }
 }

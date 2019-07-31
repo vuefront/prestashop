@@ -134,7 +134,7 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_ids']) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . implode("','", (int)$data['filter_ids']) . "')");
         }
 
         if (!empty($data['filter_special'])) {
@@ -143,9 +143,9 @@ class ModelStoreProduct extends Model
 
         if (!empty($data['filter_search'])) {
             $sql->where("pl.`name` LIKE '%" .
-            $data['filter_search'] . "%' OR pl.description LIKE '%" .
-            $data['filter_search'] . "%' OR pl.description_short LIKE '%" .
-            $data['filter_search'] . "%'");
+            pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
+            pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
+            pSQL($data['filter_search']) . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -172,7 +172,7 @@ class ModelStoreProduct extends Model
             $sql->where('p.`id_category_default` = ' . (int) $data['filter_category_id']);
         }
         if (!empty($data['filter_product_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_product_ids']) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . implode("','", (int)$data['filter_product_ids']) . "')");
         }
 
         if (!empty($data['filter_special'])) {
@@ -180,14 +180,14 @@ class ModelStoreProduct extends Model
         }
 
         if (!empty($data['filter_name'])) {
-            $sql->where("pl.`name` = '%" . $data['filter_name'] . "%'");
+            $sql->where("pl.`name` = '%" . pSQL($data['filter_name']) . "%'");
         }
 
         if (!empty($data['filter_search'])) {
             $sql->where("pl.`name` LIKE '%" .
-            $data['filter_search'] . "%' OR pl.description LIKE '%" .
-            $data['filter_search'] . "%' OR pl.description_short LIKE '%" .
-            $data['filter_search'] . "%'");
+            pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
+            pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
+            pSQL($data['filter_search']) . "%'");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

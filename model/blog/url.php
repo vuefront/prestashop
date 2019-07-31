@@ -89,10 +89,10 @@ class ModelBlogUrl extends Model
             $param += 1;
         }
         if (isset($params) && count($params) > 0 && !isset($params['rss'])) {
+
             $ok_rewrite = $base_url_blog.'/'.$ok_rewrite_do.$ok_rewrite_categorie.$ok_rewrite_page;
             $ok_rewrite .= $ok_rewrite_year.$ok_rewrite_month.$ok_rewrite_titre.$ok_rewrite_seo;
             $ok_rewrite .= $ok_rewrite_cat.$ok_rewrite_id;
-
             $ko_rewrite = '?fc=module&module=prestablog&controller=blog&'.ltrim(
                 $ko_rewrite_do.$ko_rewrite_id.$ko_rewrite_cat.$ko_rewrite_page.$ko_rewrite_year.$ko_rewrite_month,
                 '&'
@@ -114,11 +114,7 @@ class ModelBlogUrl extends Model
             (int)$params['id_lang'] = null;
         }
 
-        if ((int)Configuration::get('PS_REWRITING_SETTINGS') && (int)Configuration::get('prestablog_rewrite_actif')) {
-            return $ok_rewrite;
-        } else {
-            return $ko_rewrite;
-        }
+        return $ok_rewrite;
     }
 
     public function prestablogFilter($retourne)

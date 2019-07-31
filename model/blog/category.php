@@ -46,7 +46,12 @@ class ModelBlogCategory extends Model
             'parent_id' => $category->parent,
             'image' => $this->getImage($category->id),
             'imageLazy' => $this->getImageLazy($category->id),
-            'keyword' => $url
+            'keyword' => $url,
+            'meta' => array(
+                'title' => $category->meta_title,
+                'description' => $category->meta_description,
+                'keyword' => $category->meta_keywords,
+            ),
         );
     }
 
@@ -88,7 +93,7 @@ class ModelBlogCategory extends Model
         $sql->where('cl.`id_lang` = ' . (int) $language_id);
 
         if (isset($data['filter_parent_id'])) {
-            $sql->where('c.`parent` = ' . $data['filter_parent_id']);
+            $sql->where('c.`parent` = ' . (int)$data['filter_parent_id']);
         }
 
         $sql->orderBy($sort . ' ' . $order);
@@ -119,7 +124,7 @@ class ModelBlogCategory extends Model
         $sql->where('cl.`id_lang` = ' . (int) $language_id);
 
         if ($parent_id) {
-            $sql->where('c.`id_parent` = ' . $parent_id);
+            $sql->where('c.`id_parent` = ' . (int) $parent_id);
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

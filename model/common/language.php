@@ -31,9 +31,9 @@ class ModelCommonLanguage extends Model
         $sql->from('lang', 'l');
         $sql->leftJoin('lang_shop', 'ls', 'ls.`id_lang` = l.`id_lang`');
         if (_PS_VERSION_ > '1.7.0.0') {
-            $sql->where("LOWER(l.locale) LIKE '%".$locale."%'");
+            $sql->where("LOWER(l.locale) LIKE '%".pSQL($locale)."%'");
         } else {
-            $sql->where("LOWER(l.language_code) LIKE '%".$locale."%'");
+            $sql->where("LOWER(l.language_code) LIKE '%".pSQL($locale)."%'");
         }
         
 

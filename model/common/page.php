@@ -37,7 +37,12 @@ class ModelCommonPage extends Model
             'title' => $page->meta_title,
             'description' => html_entity_decode($page->content, ENT_QUOTES, 'UTF-8'),
             'sort_order' => (int) $page->position,
-            'keyword' => $url
+            'keyword' => $url,
+            'meta' => array(
+                'title' => $page->meta_title,
+                'description' => $page->meta_description,
+                'keyword' => $page->meta_keywords,
+            ),
         );
     }
 
@@ -64,9 +69,9 @@ class ModelCommonPage extends Model
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
 
         if (!empty($data['filter_title']) && !empty($data['filter_description'])) {
-            $sql->where("cl.`meta_title` = '%" . $data['filter_title'] .
-            "%' OR cl.content = '%" . $data['filter_description'] .
-            "%' OR cl.meta_description = '%" . $data['filter_description'] . "%'");
+            $sql->where("cl.`meta_title` = '%" . pSQL($data['filter_title']) .
+            "%' OR cl.content = '%" . pSQL($data['filter_description']) .
+            "%' OR cl.meta_description = '%" . pSQL($data['filter_description']). "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);

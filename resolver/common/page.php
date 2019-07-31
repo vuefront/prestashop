@@ -7,9 +7,9 @@
  * @author    VueFront
  * @copyright Copyright (c) permanent, VueFront
  * @license   MIT
+ *
  * @version   0.1.0
  */
-
 class ResolverCommonPage extends Resolver
 {
     public function get($args)
@@ -18,12 +18,17 @@ class ResolverCommonPage extends Resolver
         $page_info = $this->model_common_page->getPage($args['id']);
 
         return array(
-            'id'          => $page_info['id'],
-            'name'        => $page_info['title'],
-            'title'       => $page_info['title'],
+            'id' => $page_info['id'],
+            'name' => $page_info['title'],
+            'title' => $page_info['title'],
             'description' => $page_info['description'],
-            'sort_order'  => (int)$page_info['sort_order'],
-            'keyword'     => $page_info['keyword']
+            'sort_order' => (int) $page_info['sort_order'],
+            'keyword' => $page_info['keyword'],
+            'meta' => array(
+                'title' => $page_info['meta']['title'],
+                'description' => $page_info['meta']['description'],
+                'keyword' => $page_info['meta']['keyword'],
+            ),
         );
     }
 
@@ -33,7 +38,7 @@ class ResolverCommonPage extends Resolver
         $filter_data = array(
             'start' => ($args['page'] - 1) * $args['size'],
             'limit' => $args['size'],
-            'sort'  => $args['sort'],
+            'sort' => $args['sort'],
             'order' => $args['order'],
         );
 
@@ -52,18 +57,18 @@ class ResolverCommonPage extends Resolver
         $pages = array();
 
         foreach ($results as $page) {
-            $pages[] = $this->get(array( 'id' => $page['id_cms'] ));
+            $pages[] = $this->get(array('id' => $page['id_cms']));
         }
 
         return array(
-            'content'          => $pages,
-            'first'            => $args['page'] === 1,
-            'last'             => $args['page'] === ceil($page_total / $args['size']),
-            'number'           => (int) $args['page'],
+            'content' => $pages,
+            'first' => $args['page'] === 1,
+            'last' => $args['page'] === ceil($page_total / $args['size']),
+            'number' => (int) $args['page'],
             'numberOfElements' => count($pages),
-            'size'             => (int) $args['size'],
-            'totalPages'       => (int) ceil($page_total / $args['size']),
-            'totalElements'    => (int) $page_total,
+            'size' => (int) $args['size'],
+            'totalPages' => (int) ceil($page_total / $args['size']),
+            'totalElements' => (int) $page_total,
         );
     }
 }

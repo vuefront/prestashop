@@ -36,11 +36,11 @@ class ModelCommonZone extends Model
         $sql->from('state', 's');
 
         if (!empty($data['filter_name'])) {
-            $sql->where("s.`name` LIKE '%" . $data['filter_name']. "%'");
+            $sql->where("s.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
 
         if (!empty($data['filter_country_id'])) {
-            $sql->where("s.`id_country` = " . $data['filter_country_id']. "");
+            $sql->where("s.`id_country` = " . pSQL($data['filter_country_id']). "");
         }
 
 
@@ -61,11 +61,11 @@ class ModelCommonZone extends Model
         $sql->from('state', 's');
 
         if (!empty($data['filter_name'])) {
-            $sql->where("s.`name` LIKE '%" . $data['filter_name']. "%'");
+            $sql->where("s.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
 
         if (!empty($data['filter_country_id'])) {
-            $sql->where("s.`id_country` = " . $data['filter_country_id']. "");
+            $sql->where("s.`id_country` = " . pSQL($data['filter_country_id']). "");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

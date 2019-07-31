@@ -17,7 +17,7 @@ class ModelCommonAddress extends Model
         $sql = new DbQuery();
         $sql->select('*');
         $sql->from('address', 'a');
-        $sql->where('a.`id_address` = '.$address_id);
+        $sql->where('a.`id_address` = '.(int)$address_id);
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
