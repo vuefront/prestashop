@@ -23,7 +23,7 @@ class ModelStoreProduct extends Model
                 'sort' => '',
                 'order' => '',
                 'start' => 0
-                )
+            )
         );
     }
 
@@ -32,7 +32,7 @@ class ModelStoreProduct extends Model
         $product = new Product($product_id, true, $this->context->language->id, $this->context->shop->id);
 
         $images = Db::getInstance()->ExecuteS(
-            'SELECT `id_image` FROM `' . _DB_PREFIX_ . 'image` WHERE `id_product` = ' . (int) ($product_id)
+            'SELECT `id_image` FROM `' . _DB_PREFIX_ . 'image` WHERE `id_product` = ' . (int)($product_id)
         );
         foreach ($images as $key => $image_id) {
             $images[$key]['image'] = $this->context->link->getImageLink(
@@ -127,14 +127,14 @@ class ModelStoreProduct extends Model
         $sql->leftJoin('product_shop', 'ps', 'ps.`id_product` = p.`id_product`');
         $sql->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product`');
         $sql->where('p.`active` = 1');
-        $sql->where('pl.`id_lang` = ' . (int) $this->context->language->id);
+        $sql->where('pl.`id_lang` = ' . (int)$this->context->language->id);
 
         if (!empty($data['filter_category_id']) && $data['filter_category_id'] > 0) {
-            $sql->where('p.`id_category_default` = ' . (int) $data['filter_category_id']);
+            $sql->where('p.`id_category_default` = ' . (int)$data['filter_category_id']);
         }
 
         if (!empty($data['filter_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . implode("','", (int)$data['filter_ids']) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . pSQL(implode("','", $data['filter_ids'])) . "')");
         }
 
         if (!empty($data['filter_special'])) {
@@ -143,9 +143,9 @@ class ModelStoreProduct extends Model
 
         if (!empty($data['filter_search'])) {
             $sql->where("pl.`name` LIKE '%" .
-            pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
-            pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
-            pSQL($data['filter_search']) . "%'");
+                pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
+                pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
+                pSQL($data['filter_search']) . "%'");
         }
 
         $sql->orderBy($sort . ' ' . $data['order']);
@@ -166,13 +166,13 @@ class ModelStoreProduct extends Model
         $sql->leftJoin('product_shop', 'ps', 'ps.`id_product` = p.`id_product`');
         $sql->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product`');
         $sql->where('p.`active` = 1');
-        $sql->where('pl.`id_lang` = ' . (int) $this->context->language->id);
+        $sql->where('pl.`id_lang` = ' . (int)$this->context->language->id);
 
         if (!empty($data['filter_category_id']) && $data['filter_category_id'] > 0) {
-            $sql->where('p.`id_category_default` = ' . (int) $data['filter_category_id']);
+            $sql->where('p.`id_category_default` = ' . (int)$data['filter_category_id']);
         }
         if (!empty($data['filter_product_ids'])) {
-            $sql->where('p.`id_product` IN ' . "('" . implode("','", (int)$data['filter_product_ids']) . "')");
+            $sql->where('p.`id_product` IN ' . "('" . pSQL(implode("','", $data['filter_product_ids'])) . "')");
         }
 
         if (!empty($data['filter_special'])) {
@@ -185,9 +185,9 @@ class ModelStoreProduct extends Model
 
         if (!empty($data['filter_search'])) {
             $sql->where("pl.`name` LIKE '%" .
-            pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
-            pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
-            pSQL($data['filter_search']) . "%'");
+                pSQL($data['filter_search']) . "%' OR pl.description LIKE '%" .
+                pSQL($data['filter_search']) . "%' OR pl.description_short LIKE '%" .
+                pSQL($data['filter_search']) . "%'");
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
