@@ -75,7 +75,6 @@ class ModelBlogUrl extends Model
             $param += 1;
         }
         if (isset($params) && count($params) > 0 && !isset($params['rss'])) {
-
             $ok_rewrite = $base_url_blog . '/' . $ok_rewrite_do . $ok_rewrite_categorie . $ok_rewrite_page;
             $ok_rewrite .= $ok_rewrite_year . $ok_rewrite_month . $ok_rewrite_titre . $ok_rewrite_seo;
             $ok_rewrite .= $ok_rewrite_cat . $ok_rewrite_id;
