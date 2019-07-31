@@ -37,6 +37,7 @@ class Vuefront extends Module
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?'); // confirmation message at uninstall
 
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->module_key = '1d77752fd71e98268cd50f200cb5f5ce';
     }
 
     /**
