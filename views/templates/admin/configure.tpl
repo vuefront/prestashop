@@ -23,6 +23,8 @@
                         <span class="btn btn-primary clipboard" data-clipboard-target="#connect_url">{l s='copy' mod='vuefront'}</span>
                     </div>
                 </div>
+                <p class="module-content__warning">
+                  <b>{l s='Heads up!' mod='vuefront'}</b> {l s='When visiting this URL via the browser you should see an error message. This is normal behavior for a GraphQL API. Please, continue with setting up your VueFront Web App.' mod='vuefront'}</p>
                 <p class="module-content__description">
                 {l s='This is your CMS Connect URL link that shares your Store data via GraphQL. When installing VueFront via the command line, you will be prompted to enter this URL. Simply copy and paste it into the command line.' mod='vuefront'}
                 <br/>
