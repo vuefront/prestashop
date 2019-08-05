@@ -42,7 +42,10 @@ class ResolverCommonAccount extends Resolver
         }
 
 
-        return $this->get($customer->id);
+        return array(
+            'token' => null,
+            'customer' => $this->get($customer->id)
+        );
     }
 
     public function logout()
