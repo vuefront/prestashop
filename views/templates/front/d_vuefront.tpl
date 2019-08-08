@@ -9,7 +9,7 @@
  * @version   0.1.0
  *}
 <!doctype html>
-<html lang="{$language.iso_code}">
+<html lang="{$language.iso_code|escape:'htmlall':'UTF-8'}">
 <head>
     {block name='head'}
         {include file='_partials/head.tpl'}
@@ -23,7 +23,7 @@
         </div>
         <div class="module-content__title mb-2">{l s='You have Succefully installed Vuefront on Prestashop ' mod='vuefront'}</div>
 
-        <a href="https://vuefront.com/guide/setup.html" target="blank" class="btn btn-primary">Continue</a>
+        <a href="https://vuefront.com/guide/setup.html" target="blank" class="btn btn-primary">{l s='Install Web App' mod='vuefront'}</a>
     </div>
 </div>
 </body>
