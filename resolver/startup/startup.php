@@ -39,7 +39,7 @@ class ResolverStartupStartup extends Resolver
             $input = json_decode($rawInput, true);
             $query = $input['query'];
 
-            if(empty($query)) {
+            if (empty($query)) {
                 die('Query missing.');
             }
 
