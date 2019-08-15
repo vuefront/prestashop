@@ -34,7 +34,7 @@ class VuefrontGraphqlModuleFrontController extends ModuleFrontController
     public function initContent()
     {
         parent::initContent();
-        if ($_SERVER['HTTP_ACCEPT']) {
+        if (!empty($_SERVER['HTTP_ACCEPT'])) {
             $accepts = explode(',', $_SERVER['HTTP_ACCEPT']);
             if (in_array('text/html', $accepts)) {
                 $this->context->smarty->assign(array(
