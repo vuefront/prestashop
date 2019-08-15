@@ -44,9 +44,15 @@ class ResolverStoreCart extends Resolver
         if ((!$producToAdd->id or !$producToAdd->active)) {
             throw new Exception("Failed");
         }
-        
+
         if (!$producToAdd->checkQty((int)$qty)) {
             $qty = $producToAdd->getQuantity($args['id']);
+        }
+        if (!$this->context->cart->id) {
+            $this->context->cart->add();
+            if ($this->context->cart->id) {
+                $this->context->cookie->id_cart = (int) $this->context->cart->id;
+            }
         }
 
         $this->context->cart->updateQty((int)($qty), (int)($args['id']), (int)($product_attribute_id), null, 'up');
@@ -83,6 +89,7 @@ class ResolverStoreCart extends Resolver
 
         $this->context->cart->update();
 
+
         return $this->get($args);
     }
 
@@ -116,7 +123,7 @@ class ResolverStoreCart extends Resolver
                 } else {
                     $attr = explode(',', $value['attributes']);
                 }
-                
+
                 foreach ($attr as $attrValue) {
                     $options[] = array(
                         'name' => trim(explode(':', $attrValue)[0]),
