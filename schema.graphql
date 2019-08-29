@@ -16,9 +16,9 @@ input CartOption {
 }
 
 type CartProductOption {
-    name: String
-    value: String
-    type: String
+  name: String
+  value: String
+  type: String
 }
 
 type CartProduct {
@@ -185,13 +185,13 @@ type postReview {
 }
 
 type Country {
-    id: ID
-    name: String
+  id: ID
+  name: String
 }
 type Zone {
-    id: ID
-    name: String
-    countryId: String
+  id: ID
+  name: String
+  countryId: String
 }
 
 type Product {
@@ -211,8 +211,8 @@ type Product {
   stock: Boolean
   rating: Float
   attributes: [productAttribute]
-  reviews: [productReview]
-  options: [productOption]
+  reviews: [ProductReview]
+  options: [ProductOption]
   images(limit: Int = 3): [productImage]
   keyword: String
   meta: Meta
@@ -229,7 +229,7 @@ type productImage {
   imageBig: String
 }
 
-type productOption {
+type ProductOption {
   id: String
   name: String
   type: String
@@ -267,7 +267,7 @@ type ZonesResult {
   totalElements: Int
 }
 
-type productReview {
+type ProductReview {
   author: String
   author_email: String
   content: String
@@ -276,30 +276,30 @@ type productReview {
 }
 
 type ContactResult {
-    status: Boolean
+  status: Boolean
 }
 
 type Location {
-    image: String
-    imageLazy: String
-    address: String
-    geocode: String
-    telephone: String
-    fax: String
-    open: String
-    comment: String
+  image: String
+  imageLazy: String
+  address: String
+  geocode: String
+  telephone: String
+  fax: String
+  open: String
+  comment: String
 }
 
 type Contact {
-    locations: [Location]
-    store: String
-    address: String
-    email: String
-    geocode: String
-    telephone: String
-    fax: String
-    open: String
-    comment: String
+  locations: [Location]
+  store: String
+  address: String
+  email: String
+  geocode: String
+  telephone: String
+  fax: String
+  open: String
+  comment: String
 }
 
 type AccountAddress {
@@ -338,13 +338,13 @@ type CheckoutLinkResult {
 }
 
 type Meta {
-    title: String
-    description: String
-    keyword: String
+  title: String
+  description: String
+  keyword: String
 }
 
 type HomeResult {
-    meta: Meta
+  meta: Meta
 }
 
 type LoginResult {
@@ -361,8 +361,17 @@ type RootMutationType {
   accountEditPassword(password: String): Customer
   accountAddAddress(address: AccountAddressInput): AccountAddress
   accountEditAddress(id: String, address: AccountAddressInput): AccountAddress
-  accountRemoveAddress(id: String, page: Int = 1, size: Int = 10): [AccountAddress]
-  addBlogPostReview(id: String, rating: Float, author: String, content: String): Post
+  accountRemoveAddress(
+    id: String
+    page: Int = 1
+    size: Int = 10
+  ): [AccountAddress]
+  addBlogPostReview(
+    id: String
+    rating: Float
+    author: String
+    content: String
+  ): Post
   addToCart(id: String, quantity: Int = 1, options: [CartOption] = []): Cart
   updateCart(key: String, quantity: Int = 1): Cart
   removeCart(key: String): Cart
@@ -379,22 +388,73 @@ type RootMutationType {
 type RootQueryType {
   home: HomeResult
   zone(id: Int): Zone
-  zonesList(page: Int = 1, size: Int = 10, search: String, country_id: String, sort: String = "name", order: String = "ASC"): ZonesResult
+  zonesList(
+    page: Int = 1
+    size: Int = 10
+    search: String
+    country_id: String
+    sort: String = "name"
+    order: String = "ASC"
+  ): ZonesResult
   country(id: Int): Country
-  countriesList(page: Int = 1, size: Int = 10, search: String, sort: String = "name", order: String = "ASC"): CountriesResult
+  countriesList(
+    page: Int = 1
+    size: Int = 10
+    search: String
+    sort: String = "name"
+    order: String = "ASC"
+  ): CountriesResult
   categoryBlog(id: String): categoryBlog
-  categoriesBlogList(page: Int = 1, size: Int = 10, filter: String, parent: Int = -1, sort: String = "sort_order", order: String = "ASC"): categoryBlogResult
+  categoriesBlogList(
+    page: Int = 1
+    size: Int = 10
+    filter: String
+    parent: Int = -1
+    sort: String = "sort_order"
+    order: String = "ASC"
+  ): categoryBlogResult
   post(id: String): Post
-  postsList(page: Int = 1, size: Int = 10, filter: String, search: String, category_id: String = "", sort: String = "sort_order", order: String = "ASC"): PostResult
+  postsList(
+    page: Int = 1
+    size: Int = 10
+    filter: String
+    search: String
+    category_id: String = ""
+    sort: String = "sort_order"
+    order: String = "ASC"
+  ): PostResult
   cart: Cart
   category(id: String): Category
-  categoriesList(page: Int = 1, size: Int = 10, filter: String, parent: Int = -1, sort: String = "sort_order", order: String = "ASC"): CategoryResult
+  categoriesList(
+    page: Int = 1
+    size: Int = 10
+    filter: String
+    parent: Int = -1
+    sort: String = "sort_order"
+    order: String = "ASC"
+  ): CategoryResult
   compare: [Product]
   currency: [Currency]
   language: [Language]
   page(id: String): Page
-  pagesList(page: Int = 1, size: Int = 10, search: String = "", sort: String = "sort_order", order: String = "ASC"): PageResult
-  productsList(page: Int = 1, size: Int = 15, filter: String = "", special: Boolean = false, search: String = "", ids: [Int] = [], category_id: String = "", sort: String = "sort_order", order: String = "ASC"): ProductResult
+  pagesList(
+    page: Int = 1
+    size: Int = 10
+    search: String = ""
+    sort: String = "sort_order"
+    order: String = "ASC"
+  ): PageResult
+  productsList(
+    page: Int = 1
+    size: Int = 15
+    filter: String = ""
+    special: Boolean = false
+    search: String = ""
+    ids: [Int] = []
+    category_id: String = ""
+    sort: String = "sort_order"
+    order: String = "ASC"
+  ): ProductResult
   product(id: String): Product
   wishlist: [Product]
   contact: Contact
@@ -403,4 +463,3 @@ type RootQueryType {
   accountAddress(id: String): AccountAddress
   checkoutLink: CheckoutLinkResult
 }
-
