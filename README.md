@@ -36,6 +36,7 @@ This is a PrestaShop module that connects the PrestaShop CMS with the VueFront W
 Since PrestaShop does not have a built-in Blog, we use [PrestaBlog](https://addons.prestashop.com/en/blog-forum-new/4731-professional-blog.html) to add blog support. If PrestaBlog is not avalible, VueFront will ignore it.
 
 ## How to install?
+Php version required >= 5.5, <= 7.2 (this limitation will be removed in the future)
 
 ### Quick Install
 1. The quickest way to install is via PrestaShop Module Manager or manually [Download](https://github.com/vuefront/prestashop/releases) the **compiled** module and upload it through the 'Modules > Module Manager > Upload a module' menu in PrestaShop
