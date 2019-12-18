@@ -47,7 +47,7 @@ class Vuefront extends Module
     public function install()
     {
         return parent::install() &&
-        $this->registerAdminTab();
+        $this->registerAdminTab() && $this->registerAdminAjaxTab();
     }
 
     /**
@@ -77,13 +77,26 @@ class Vuefront extends Module
             )
         ));
 
-        $this->context->controller->addCSS($this->_path . '/views/css/admin.css');
-        $this->context->controller->addJS($this->_path . '/views/js/clipboard.min.js');
+        $app = json_decode(file_get_contents(__DIR__ . '/views/js/d_vuefront/manifest.json'), true);
+        $current_chunk = $app['files'];
+        while (!empty($current_chunk)) {
+          foreach ($current_chunk['js'] as $value) {
+            $this->context->controller->addJS($this->_path . 'views/js/d_vuefront/' . basename($value), false);
+          }
+          foreach ($current_chunk['css'] as $value) {
+                $this->context->controller->addCSS($this->_path . 'views/js/d_vuefront/' . basename($value));
+          }
+          $current_chunk = $current_chunk['next'];
+        }
 
         $this->context->smarty->assign(array(
             'catalog' => Tools::getHttpHost(true).
             __PS_BASE_URI__.'index.php?controller=graphql&module=vuefront&fc=module',
-            'blog' => Module::isInstalled('prestablog')
+            'blog' => Module::isInstalled('prestablog'),
+            'baseUrl' => '',
+            'siteUrl' => Tools::getHttpHost(true).
+            __PS_BASE_URI__,
+            'tokenVuefront' => Tools::getAdminTokenLite('AdminVuefrontAjax')
         ));
 
         return $this->display(__FILE__, 'views/templates/admin/configure.tpl');
@@ -98,6 +111,21 @@ class Vuefront extends Module
         return json_decode(Configuration::get($this->name), true);
     }
 
+    public function registerAdminAjaxTab()
+    {
+
+        $tab = new Tab();
+        $tab->class_name = 'AdminVuefrontAjax';
+        $tab->module = 'vuefront';
+
+        foreach (Language::getLanguages(false) as $lang) {
+          $tab->name[$lang['id_lang']] = 'Vuefront';
+        }
+
+        $tab->id_parent = -1;
+        
+        return $tab->save();
+    }
     public function registerAdminTab()
     {
         $tab = new Tab();
@@ -111,6 +139,16 @@ class Vuefront extends Module
         $tab->icon = 'library_books';
 
         return $tab->save();
+    }
+
+    public function ajaxProcessProxy()
+    {
+      return 'foo'; //THIS WON'T BE FUNCTIONING PROPERLY
+    }
+
+    public function displayAjaxProxy()
+    {
+      return 'foo'; //THIS WON'T BE FUNCTIONING PROPERLY
     }
 
     public function deleteAdminTab()
