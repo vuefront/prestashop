@@ -17,6 +17,16 @@ class AdminVuefrontAjaxController extends ModuleAdminController
     {
         if (strpos($_SERVER["SERVER_SOFTWARE"], "Apache") !== false) {
             if (file_exists(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt')) {
+                if(!is_writable(_PS_ROOT_DIR_ . '/.htaccess') || !is_writable(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt')) {
+
+                    http_response_code(500);
+
+                    die(Tools::jsonEncode(
+                       array(
+                         'error' => 'not_writable_htaccess'
+                       )
+                    ));
+                }
                 $content = file_get_contents(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt');
                 file_put_contents(_PS_ROOT_DIR_ . '/.htaccess', $content);
                 unlink(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt');
@@ -50,6 +60,15 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !.*\.(ico|gif|jpg|jpeg|png|js|css)
 RewriteRule ^([^?]*) index.php?_route_=$1 [L,QSA]");
+            }
+
+            if(!is_writable(_PS_ROOT_DIR_ . '/.htaccess')) {
+                http_response_code(500);
+                die(Tools::jsonEncode(
+                    array(
+                        'error' => 'not_writable_htaccess'
+                    )
+                ));
             }
 
             if (file_exists(_PS_ROOT_DIR_ . '/.htaccess')) {

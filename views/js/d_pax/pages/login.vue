@@ -1,5 +1,8 @@
 <template>
-  <div class="login-page" id="vf-login-form">
+  <div
+    id="vf-login-form"
+    class="login-page"
+  >
     <h3 class="font-weight-normal login-page__email">
       {{ form.email }}
     </h3>
