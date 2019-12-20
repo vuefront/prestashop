@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
         siteUrl: '{$siteUrl}',
         tokenUrl: "token={$tokenVuefront|escape:'html':'UTF-8'}",
         apiURL: '',
-        type: 'prestahop'
+        type: 'prestashop'
       })
 })
 </script>
