@@ -43,6 +43,11 @@ class AdminVuefrontAjaxController extends ModuleAdminController
 
         $catalog_path = $catalog_url_info['path'];
 
+        $document_path = $catalog_path;
+        if(!empty($_SERVER['DOCUMENT_ROOT'])) {
+          $document_path = str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath(_PS_ROOT_DIR_)) . '/';
+        }
+
         if (strpos($_SERVER["SERVER_SOFTWARE"], "Apache") !== false) {
 
             if(!file_exists(_PS_ROOT_DIR_ . '/.htaccess')) {
@@ -93,12 +98,12 @@ RewriteRule ^([^?]*) vuefront/$1
 # VueFront home page
 RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
-RewriteCond %{DOCUMENT_ROOT}".$catalog_path."vuefront/index.html -f
+RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/index.html -f
 RewriteRule ^$ vuefront/index.html [L]
 
 RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
-RewriteCond %{DOCUMENT_ROOT}".$catalog_path."vuefront/index.html !-f
+RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/index.html !-f
 RewriteRule ^$ vuefront/200.html [L]
 
 # VueFront page if exists html file
@@ -106,7 +111,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
-RewriteCond %{DOCUMENT_ROOT}".$catalog_path."vuefront/$1.html -f
+RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/$1.html -f
 RewriteRule ^([^?]*) vuefront/$1.html [L,QSA]
 
 # VueFront page if not exists html file
@@ -114,7 +119,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
-RewriteCond %{DOCUMENT_ROOT}".$catalog_path."vuefront/$1.html !-f
+RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/$1.html !-f
 RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
 
                 $content = file_get_contents(_PS_ROOT_DIR_ . '/.htaccess');
