@@ -130,7 +130,8 @@ class ModelStoreProduct extends Model
         $sql->where('pl.`id_lang` = ' . (int)$this->context->language->id);
 
         if (!empty($data['filter_category_id']) && $data['filter_category_id'] > 0) {
-            $sql->where('p.`id_category_default` = ' . (int)$data['filter_category_id']);
+            $sql->leftJoin('category_product', 'c', 'c.`id_product` = p.`id_product`');
+            $sql->where('c.`id_category` = ' . (int)$data['filter_category_id']);
         }
 
         if (!empty($data['filter_ids'])) {
@@ -155,6 +156,10 @@ class ModelStoreProduct extends Model
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
+        if ($data['sort'] == 'price') {
+            Tools::orderbyPrice($result,$data['order']);
+        }
+
         return $result;
     }
 
@@ -169,7 +174,8 @@ class ModelStoreProduct extends Model
         $sql->where('pl.`id_lang` = ' . (int)$this->context->language->id);
 
         if (!empty($data['filter_category_id']) && $data['filter_category_id'] > 0) {
-            $sql->where('p.`id_category_default` = ' . (int)$data['filter_category_id']);
+          $sql->leftJoin('category_product', 'c', 'c.`id_product` = p.`id_product`');
+          $sql->where('c.`id_category` = ' . (int)$data['filter_category_id']);
         }
         if (!empty($data['filter_product_ids'])) {
             $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_product_ids']) . "')");
