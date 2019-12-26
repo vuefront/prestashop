@@ -96,12 +96,12 @@ RewriteRule ^([^?]*) vuefront/$1
 # VueFront pages
 
 # VueFront home page
-RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
+RewriteCond %{REQUEST_URI} !.*(image|.php|admin|catalog|\/img\/.*\/|wp-json|wp-admin|wp-content|checkout|rest|static|order|themes\/|modules\/|js\/|\/vuefront\/)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
 RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/index.html -f
 RewriteRule ^$ vuefront/index.html [L]
 
-RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
+RewriteCond %{REQUEST_URI} !.*(image|.php|admin|catalog|\/img\/.*\/|wp-json|wp-admin|wp-content|checkout|rest|static|order|themes\/|modules\/|js\/|\/vuefront\/)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
 RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/index.html !-f
 RewriteRule ^$ vuefront/200.html [L]
@@ -109,7 +109,7 @@ RewriteRule ^$ vuefront/200.html [L]
 # VueFront page if exists html file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
+RewriteCond %{REQUEST_URI} !.*(image|.php|admin|catalog|\/img\/.*\/|wp-json|wp-admin|wp-content|checkout|rest|static|order|themes\/|modules\/|js\/|\/vuefront\/)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
 RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/$1.html -f
 RewriteRule ^([^?]*) vuefront/$1.html [L,QSA]
@@ -117,7 +117,7 @@ RewriteRule ^([^?]*) vuefront/$1.html [L,QSA]
 # VueFront page if not exists html file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !.*(images|index.php|.html|admin|.js|.css|.png|.jpeg|.ico|wp-json|wp-admin|checkout|jpg)
+RewriteCond %{REQUEST_URI} !.*(image|.php|admin|catalog|\/img\/.*\/|wp-json|wp-admin|wp-content|checkout|rest|static|order|themes\/|modules\/|js\/|\/vuefront\/)
 RewriteCond %{QUERY_STRING} !.*(rest_route)
 RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/$1.html !-f
 RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
