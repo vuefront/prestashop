@@ -32,6 +32,8 @@ This is a PrestaShop module that connects the PrestaShop CMS with the VueFront W
 
 [VueFront on PrestaShop](https://prestashop.vuefront.com/)
 
+![VueFront for PrestaShop admin panel](http://joxi.net/E2p1aYlS7JP05A.jpg)
+
 ### PrestaShop Blog (PrestaBlog) 
 Since PrestaShop does not have a built-in Blog, we use [PrestaBlog](https://addons.prestashop.com/en/blog-forum-new/4731-professional-blog.html) to add blog support. If PrestaBlog is not avalible, VueFront will ignore it.
 
