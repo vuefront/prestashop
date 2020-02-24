@@ -141,16 +141,6 @@ class Vuefront extends Module
         return $tab->save();
     }
 
-    public function ajaxProcessProxy()
-    {
-      return 'foo'; //THIS WON'T BE FUNCTIONING PROPERLY
-    }
-
-    public function displayAjaxProxy()
-    {
-      return 'foo'; //THIS WON'T BE FUNCTIONING PROPERLY
-    }
-
     public function deleteAdminTab()
     {
         foreach (array('AdminVuefront') as $tab_name) {
@@ -163,46 +153,4 @@ class Vuefront extends Module
 
         return true;
     }
-
-
-    // /**
-    //  * Determins if on the module configuration page
-    //  * @return bool
-    //  */
-    // public function isConfigPage()
-    // {
-    //     return self::isAdminPage('modules') && Tools::getValue('configure') === $this->name;
-    // }
-
-    // /**
-    //  * Determines if on the specified admin page
-    //  * @param string $page
-    //  * @return bool
-    //  */
-    // public static function isAdminPage($page)
-    // {
-    //     return Tools::getValue('controller') === 'Admin' . ucfirst($page);
-    // }
-
-    /**
-     * Add the CSS & JavaScript files on FO.
-     */
-    // public function hookActionAdminControllerSetMedia()
-    // {
-    //     // $this->context->controller->addJS($this->_path . '/views/js/front.js');
-        
-    // }
-
-    // /**
-    //  * Homepage content hook (Technical name: displayHome)
-    //  */
-    // public function hookDisplayHome($params)
-    // {
-    //     !isset($params['tpl']) && $params['tpl'] = 'displayHome';
-
-    //     $this->config_values = $this->getConfigValues();
-    //     $this->smarty->assign($this->config_values);
-
-    //     return $this->display(__FILE__, $params['tpl'] . '.tpl');
-    // }
 }
