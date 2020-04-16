@@ -32,3 +32,15 @@ function start($context)
 
     $registry->get('load')->resolver('startup/startup');
 }
+
+function callback($context)
+{
+    $registry = new Registry();
+
+    $loader = new Loader($registry);
+    $registry->set('load', $loader);
+
+    $registry->set('context', $context);
+
+    $registry->get('load')->resolver('store/checkout/callback');
+}

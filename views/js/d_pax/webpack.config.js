@@ -118,10 +118,6 @@ module.exports = (env, argv) => {
               /^text\/html/.test(proxyRes.headers['content-type'])
             ) {
               res.write = buffer => {
-                if(proxyRes.headers['set-cookie']) {
-                  const cookie = proxyRes.headers['set-cookie'][0]
-                  res.setHeader('set-cookie', cookie.replace(/domain=(.*);/, 'domain=localhost;'));
-                }
                 try {
                   const isZipped =
                     proxyRes.headers['content-encoding'] === 'gzip'

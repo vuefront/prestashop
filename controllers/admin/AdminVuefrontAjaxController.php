@@ -13,7 +13,7 @@
 class AdminVuefrontAjaxController extends ModuleAdminController
 {
 
-  public function ajaxProcessVfTurnOff()
+    public function ajaxProcessVfTurnOff()
     {
         if (strpos($_SERVER["SERVER_SOFTWARE"], "Apache") !== false) {
             if (file_exists(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt')) {
@@ -36,9 +36,71 @@ class AdminVuefrontAjaxController extends ModuleAdminController
         $this->ajaxProcessVfInformation();
     }
 
-  public function ajaxProcessVfTurnOn() {
-    $catalog = Tools::getHttpHost(true). __PS_BASE_URI__;
-    try {
+    public function ajaxProcessVfAppsRemove() {
+        $option = Configuration::get('vuefront-apps');
+
+        $setting = array();
+
+        try {
+            $setting = Tools::jsonDecode($option, true);
+        } catch(Exception $e) {
+
+        }
+        unset($setting[$_POST['key']]);
+        Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
+    }
+
+    public function ajaxProcessVfAppsCreate() {
+        
+        $option = Configuration::get('vuefront-apps');
+
+        $setting = array();
+
+        try {
+            $setting = Tools::jsonDecode($option, true);
+        } catch(Exception $e) {
+
+        }
+
+        $d = new DateTime();
+            
+        $setting[] = array(
+            'codename' => $_POST['codename'],
+            'jwt' => $_POST['jwt'],
+            'dateAdded' => $d->format('Y-m-d\TH:i:s.u')
+        );
+    
+        Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
+
+        die(
+            Tools::jsonEncode(
+                [
+                'success' => 'success'
+                ]
+            )
+          );
+    }
+
+    public function ajaxProcessVfApps() {
+        $option = Configuration::get('vuefront-apps');
+
+        $setting = array();
+
+        try {
+            $setting = Tools::jsonDecode($option, true);
+        } catch(Exception $e) {
+
+        }
+        die(
+            Tools::jsonEncode(
+                $setting
+            )
+          );
+    }
+
+    public function ajaxProcessVfTurnOn() {
+        $catalog = Tools::getHttpHost(true). __PS_BASE_URI__;
+        try {
         $catalog_url_info = parse_url($catalog);
 
         $catalog_path = $catalog_url_info['path'];

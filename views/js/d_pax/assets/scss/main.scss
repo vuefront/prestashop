@@ -52,6 +52,12 @@
   font-family: 'Open-Sans', sans-serif;
   box-sizing: border-box;
 
+  .row {
+    &::before, &::after {
+      display: inherit;
+    }
+  }
+
   table {
     border-collapse: collapse; // Prevent double borders
   }
