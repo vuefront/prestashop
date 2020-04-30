@@ -26,7 +26,7 @@ final class Loader
         $action = new Action($route);
 
         $output = $action->execute($this->registry, array(&$data));
-
+        
         if (!$output instanceof Exception) {
             return $output;
         }

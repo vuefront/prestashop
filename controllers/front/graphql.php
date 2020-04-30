@@ -26,8 +26,14 @@ class VuefrontGraphqlModuleFrontController extends ModuleFrontController
         parent::setMedia();
         $this->context->controller->registerStylesheet(
             'modules-vuefront-front-css',
-            'modules/vuefront/views/css/front.css',
+            'modules/vuefront/views/css/index.css',
             array('media' => 'all', 'priority' => 200)
+        );
+
+        $this->context->controller->registerJavascript(
+            'modules-vuefront-front-js',
+            'modules/vuefront/views/js/middleware.js',
+            array('position' => 'head', 'priority' => 0)
         );
     }
 
@@ -38,7 +44,8 @@ class VuefrontGraphqlModuleFrontController extends ModuleFrontController
             $accepts = explode(',', $_SERVER['HTTP_ACCEPT']);
             if (in_array('text/html', $accepts)) {
                 $this->context->smarty->assign(array(
-                    'hello' => 'Hello World!!!'
+                    'hello' => 'Hello World!!!',
+                    'target' => __PS_BASE_URI__.'index.php?controller=graphql&module=vuefront&fc=module'
                 ));
 
                 $this->setTemplate('module:vuefront/views/templates/front/d_vuefront.tpl');
@@ -46,6 +53,6 @@ class VuefrontGraphqlModuleFrontController extends ModuleFrontController
             }
         }
 
-        start($this->context);
+        start($this->context, $this->getTranslator(), $this->objectPresenter);
     }
 }

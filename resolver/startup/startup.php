@@ -30,6 +30,7 @@ class ResolverStartupStartup extends Resolver
                 'If-Modified-Since,Cache-Control,Content-Type,Range,Token,token,Cookie,cookie,content-type');
         }
 
+
         $this->load->model('startup/startup');
 
         try {
@@ -45,6 +46,7 @@ class ResolverStartupStartup extends Resolver
 
             $variableValues = isset($input['variables']) ? $input['variables'] : null;
             $result = GraphQL::executeQuery($schema, $query, $resolvers, null, $variableValues);
+
         } catch (\Exception $e) {
             $result = [
                 'error' => [

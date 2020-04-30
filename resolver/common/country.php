@@ -53,6 +53,12 @@ class ResolverCommonCountry extends Resolver
         $results = $this->model_common_country->getCountries($filter_data);
         $country_total = $this->model_common_country->getTotalCountries($filter_data);
 
+        if (Configuration::get('PS_RESTRICT_DELIVERED_COUNTRIES')) {
+            $availableCountries = Carrier::getDeliveredCountries($this->context->language->id, true, true);
+        } else {
+            $availableCountries = Country::getCountries($this->context->language->id, true);
+        }
+
         foreach ($results as $value) {
             $countries[] = $this->get(array( 'id' => $value['id_country'] ));
         }

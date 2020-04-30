@@ -40,7 +40,7 @@ class ModelCommonCountry extends Model
         $sql->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`');
         $sql->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`');
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
-
+        $sql->where('c.`active` = 1');
         if (!empty($data['filter_name'])) {
             $sql->where("cl.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
@@ -63,7 +63,7 @@ class ModelCommonCountry extends Model
         $sql->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`');
         $sql->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`');
         $sql->where('cl.`id_lang` = ' . (int) $this->context->language->id);
-
+        $sql->where('c.`active` = 1');
         if (!empty($data['filter_name'])) {
             $sql->where("cl.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }

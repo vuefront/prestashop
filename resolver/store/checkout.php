@@ -11,8 +11,33 @@
  * @version   0.1.0
  */
 
+use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
+use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+
+
 class ResolverStoreCheckout extends Resolver
 {
+    /**
+     * @var CheckoutSession
+     */
+    private $checkoutSession;
+
+    function __construct($registry)
+    {
+        parent::__construct($registry);
+        $deliveryOptionsFinder = new DeliveryOptionsFinder(
+            $this->context,
+            $this->translator,
+            $this->objectPresenter,
+            new PriceFormatter()
+        );
+
+        $this->checkoutSession = new CheckoutSession(
+            $this->context,
+            $deliveryOptionsFinder
+        );
+    }
+
     public function link()
     {
         return array(
@@ -56,28 +81,18 @@ class ResolverStoreCheckout extends Resolver
     {
         $this->load->model('store/checkout');
 
-        $response = $this->model_store_checkout->requestCheckout(
-            '{
-                shippings {
-                    setting
-                    codename
-                    status
-                    name
-              }
-            }',
-            array()
-        );
+        $delivers = $this->checkoutSession->getDeliveryOptions();
 
         $methods = array();
 
-        foreach ($response['shippings'] as $key => $value) {
-            if ($value['status']) {
-                $methods[] = array(
-                    'id' => $value['codename'],
-                    'codename' => $value['codename'],
-                    "name" => $value['name']
-                );
-            }
+        foreach ($delivers as $carrier_id => $carrier) {
+            $addressId = $this->checkoutSession->getIdAddressDelivery();
+            $id = $addressId . '-' . $carrier_id;
+            $methods[] = array(
+                'id' => $id,
+                'codename' => $id,
+                'name' => $carrier['name']
+            );
         }
 
         return $methods;
@@ -225,244 +240,322 @@ class ResolverStoreCheckout extends Resolver
         return $fields;
     }
 
-    public function createOrder($args)
+    public function createOrder() {
+        $vf_shipping_address = array();
+
+        foreach ($this->shippingAddress() as $value) {
+            $vf_shipping_address[$value['name']] = ' ';
+        }
+
+
+        $delivery_address = new Address();
+        $delivery_address->alias = 'My Address';
+        if(!empty(trim($vf_shipping_address['country']))) {
+            $delivery_address->id_country = $vf_shipping_address['country'];
+        } else {
+            $delivery_address->id_country = 0;
+        }
+        $delivery_address->city = $vf_shipping_address['city'];
+        $delivery_address->company = $vf_shipping_address['company'];
+        $delivery_address->firstname = $vf_shipping_address['firstName'];
+        $delivery_address->lastname = $vf_shipping_address['lastName'];
+        $delivery_address->postcode = $vf_shipping_address['postcode'];
+        $delivery_address->address1 = $vf_shipping_address['address1'];
+        $delivery_address->address2 = $vf_shipping_address['address2'];
+        $delivery_address->save();
+
+        $this->context->cookie->vf_shipping_address = $delivery_address->id;
+
+        $vf_payment_address = array(
+            'custom_field' => array()
+        );
+
+        $paymentAddress = $this->paymentAddress();
+        foreach ($paymentAddress['fields'] as $value) {
+            $vf_payment_address[$value['name']] = ' ';
+        }
+
+        $invoice_address = new Address();
+        $invoice_address->alias = 'My Address';
+        if(!empty(trim($vf_payment_address['country']))) {
+            $invoice_address->id_country = $vf_payment_address['country'];
+        } else {
+            $invoice_address->id_country = 0;
+        }
+        $invoice_address->city = $vf_payment_address['city'];
+        $invoice_address->company = $vf_payment_address['company'];
+        $invoice_address->firstname = $vf_payment_address['firstName'];
+        $invoice_address->lastname = $vf_payment_address['lastName'];
+        $invoice_address->postcode = $vf_payment_address['postcode'];
+        $invoice_address->vat_number = $vf_payment_address['inn'];
+        $invoice_address->address1 = $vf_payment_address['address1'];
+        $invoice_address->address2 = $vf_payment_address['address2'];
+
+        $invoice_address->save();
+
+        $this->context->cookie->vf_payment_address = $invoice_address->id;
+
+        $this->context->cookie->vf_payment_method = '';
+        $this->context->cookie->vf_shipping_method = '';
+        return array('success'=> 'success');
+    }
+
+    public function updateOrder($args) {
+        $vf_shipping_address_id = 0;
+
+        if (isset($this->context->cookie->vf_shipping_address)) {
+            $vf_shipping_address_id = $this->context->cookie->vf_shipping_address;
+        }
+        $vf_shipping_address = array();
+        foreach ($args['shippingAddress'] as $value) {
+            if ($value['value']) {
+                $vf_shipping_address[$value['name']] = $value['value'];
+            } else {
+                $vf_shipping_address[$value['name']] = ' ';
+            }
+        }
+
+        $delivery_address = new Address($vf_shipping_address_id);
+        if(!empty(trim($vf_shipping_address['country']))) {
+            $delivery_address->id_country = $vf_shipping_address['country'];
+            $this->checkoutSession->setIdAddressDelivery($delivery_address->id);
+            
+        } else {
+            $delivery_address->id_country = 0;
+        }
+
+        $delivery_address->city = $vf_shipping_address['city'];
+        $delivery_address->company = $vf_shipping_address['company'];
+        $delivery_address->firstname = $vf_shipping_address['firstName'];
+        $delivery_address->lastname = $vf_shipping_address['lastName'];
+        $delivery_address->postcode = $vf_shipping_address['postcode'];
+        $delivery_address->address1 = $vf_shipping_address['address1'];
+        $delivery_address->address2 = $vf_shipping_address['address2'];
+
+        $delivery_address->save(true);
+
+        $vf_payment_address_id = 0;
+
+        if (isset($this->context->cookie->vf_payment_address)) {
+            $vf_payment_address_id = $this->context->cookie->vf_payment_address;
+        }
+
+        $vf_payment_address = array();
+
+        foreach ($args['paymentAddress'] as $value) {
+            if ($value['value']) {
+                $vf_payment_address[$value['name']] = $value['value'];
+            } else {
+                $vf_payment_address[$value['name']] = ' ';
+            }
+        }
+
+        $invoice_address = new Address($vf_payment_address_id);
+        $invoice_address->alias = 'My Address';
+        if(!empty(trim($vf_payment_address['country']))) {
+            $invoice_address->id_country = $vf_payment_address['country'];
+            $this->checkoutSession->setIdAddressInvoice($invoice_address->id);
+        } else {
+            $invoice_address->id_country = 0;
+        }
+        $invoice_address->city = $vf_payment_address['city'];
+        $invoice_address->company = $vf_payment_address['company'];
+        $invoice_address->firstname = $vf_payment_address['firstName'];
+        $invoice_address->lastname = $vf_payment_address['lastName'];
+        $invoice_address->postcode = $vf_payment_address['postcode'];
+        $invoice_address->vat_number = $vf_payment_address['inn'];
+        $invoice_address->address1 = $vf_payment_address['address1'];
+        $invoice_address->address2 = $vf_payment_address['address2'];
+
+        $invoice_address->save(true);
+
+        $this->context->cookie->vf_payment_method = $args['paymentMethod'];
+        $this->context->cookie->vf_shipping_method = $args['shippingMethod'];
+
+        if (!empty($args['shippingMethod'])) {
+            $delivery_option = explode('-', $args['shippingMethod']);
+            $this->checkoutSession->setDeliveryOption(array($delivery_address->id => $delivery_option[1]));
+        }
+
+        return array(
+            'paymentMethods' => $this->load->resolver('store/checkout/paymentMethods'),
+            'shippingMethods' => $this->load->resolver('store/checkout/shippingMethods'),
+            'totals' => $this->load->resolver('store/checkout/totals'),
+        );
+    }
+
+    public function totals() {
+        $totals = array();
+
+        $cart_presenter = new CartPresenter();
+
+        $cart = $cart_presenter->present($this->context->cart);
+
+        foreach ($cart['subtotals'] as $subtotal) {
+            if ($subtotal['value'] && $subtotal['type'] != 'tax') {
+                $totals[] = array(
+                    'title' => $subtotal['label'],
+                    'text' => $subtotal['value']
+                );
+            }
+        }
+
+        $display_prices_tax_incl = (bool) (new TaxConfiguration())->includeTaxes();
+        $tax_enabled = (bool) Configuration::get('PS_TAX');
+
+        if(!$display_prices_tax_incl && $tax_enabled) {
+            $totals[] = array(
+                'title' => $cart['totals']['total']['label'].' '.$cart['labels']['tax_short'],
+                'text' => $cart['totals']['total']['value']
+            );
+            $totals[] = array(
+                'title' => $cart['totals']['total_including_tax']['label'],
+                'text' => $cart['totals']['total_including_tax']['value']
+            );
+        } else {
+            $suffix = '';
+
+            if($tax_enabled) {
+                $suffix = ' '.$cart['labels']['tax_short'];
+            }
+
+            $totals[] = array(
+                'title' => $cart['totals']['total']['label'].$suffix,
+                'text' => $cart['totals']['total']['value']
+            );
+        }
+
+        if($cart['subtotals']['tax']) {
+            $totals[] = array(
+                'title' => $cart['subtotals']['tax']['label'],
+                'text' => sprintf('%label%', $cart['subtotals']['tax']['label'])
+            );
+        }
+
+        return $totals;
+    }
+
+    public function confirmOrder($args)
     {
         $this->load->model('store/checkout');
 
-        $paymentAddress = array();
+        $vf_shipping_address_id = 0;
 
-        foreach ($args['paymentAddress'] as $value) {
-            $paymentAddress[$value['name']] = $value['value'];
+        if (isset($this->context->cookie->vf_shipping_address)) {
+            $vf_shipping_address_id = $this->context->cookie->vf_shipping_address;
         }
 
-        $shippingAddress = array();
+        $vf_payment_address_id = 0;
 
-        foreach ($args['shippingAddress'] as $value) {
-            $shippingAddress[$value['name']] = $value['value'];
+        if (isset($this->context->cookie->vf_payment_address)) {
+            $vf_payment_address_id = $this->context->cookie->vf_payment_address;
         }
+
+        $paymentMethod = $this->context->cookie->vf_payment_method;
 
         $response = $this->model_store_checkout->requestCheckout(
-            'query($pCodename: String, $sCodename: String){
-                payment(codename: $pCodename) {
-                    codename
-                    name
-                }
-                shipping(codename: $sCodename) {
+            'query($codename: String){
+                payment(codename: $codename) {
                     codename
                     name
                 }
             }',
             array(
-                'pCodename' => $args['paymentMethod'],
-                'sCodename' => $args['shippingMethod']
+                'codename' => $paymentMethod
             )
         );
 
-        $shippingMethod = $response['shipping'];
         $paymentMethod = $response['payment'];
-
-        $delivery_option_list = $this->context->cart->getDeliveryOptionList();
-        $package_list = $this->context->cart->getPackageList();
-        $cart_delivery_option = $this->context->cart->getDeliveryOption();
-
-        // If some delivery options are not defined, or not valid, use the first valid option
-        foreach ($delivery_option_list as $id_address => $package) {
-            if (!isset($cart_delivery_option[$id_address]) || !array_key_exists($cart_delivery_option[$id_address], $package)) {
-                foreach ($package as $key => $val) {
-                    $cart_delivery_option[$id_address] = $key;
-                    break;
-                }
-            }
-        }
-
-        $order_id = 0;
-        $order_total = 0;
-        $order_list = array();
-        $order_detail_list = array();
 
         do {
             $reference = Order::generateReference();
         } while (Order::getByReference($reference)->count());
 
-        foreach ($cart_delivery_option as $id_address => $key_carriers) {
-            foreach ($delivery_option_list[$id_address][$key_carriers]['carrier_list'] as $id_carrier => $data) {
-                foreach ($data['package_list'] as $id_package) {
-                    // Rewrite the id_warehouse
-                    $package_list[$id_address][$id_package]['id_warehouse'] = (int) $this->context->cart->getPackageIdWarehouse($package_list[$id_address][$id_package], (int) $id_carrier);
-                    $package_list[$id_address][$id_package]['id_carrier'] = $id_carrier;
-                }
-            }
-        }
-
-        CartRule::cleanCache();
-        $cart_rules = $this->context->cart->getCartRules();
-        foreach ($cart_rules as $cart_rule) {
-            if (($rule = new CartRule((int) $cart_rule['obj']->id)) && Validate::isLoadedObject($rule)) {
-                if ($rule->checkValidity($this->context, true, true)) {
-                    $this->context->cart->removeCartRule((int) $rule->id);
-                    if (isset($this->context->cookie, $this->context->cookie->id_customer) && $this->context->cookie->id_customer && !empty($rule->code)) {
-                        Tools::redirect('index.php?controller=order&submitAddDiscount=1&discount_name=' . urlencode($rule->code));
-                    }
-                }
-            }
-        }
-
-
-        if(empty($package_list)) {
+        if (empty($this->context->cart->getProducts())) {
             throw new Exception("Empty cart");
             return;
         }
 
-        foreach ($package_list as $id_address => $packageByAddress) {
-            foreach ($packageByAddress as $id_package => $package) {
-                $order = new Order();
+        $order = new Order();
 
-                $carrierId = isset($package['id_carrier']) ? $package['id_carrier'] : null;
+        $order->id_address_delivery = $vf_shipping_address_id;
+        $order->id_address_invoice = $vf_payment_address_id;
+        $order->id_customer = (int) $this->context->cart->id_customer;
+        $order->id_currency = $this->context->currency->id;
+        $order->id_lang = (int) $this->context->cart->id_lang;
+        $order->id_cart = (int) $this->context->cart->id;
+        $order->id_shop = (int) $this->context->shop->id;
+        $order->id_shop_group = (int) $this->context->shop->id_shop_group;
+        $order->payment = $paymentMethod['name'];
+        $order->module = "vuefront";
 
-                $carrier = null;
-                if (!$this->context->cart->isVirtualCart() && isset($carrierId)) {
-                    $carrier = new Carrier((int) $carrierId, (int) $this->context->cart->id_lang);
-                    $order->id_carrier = (int) $carrier->id;
-                    $carrierId = (int) $carrier->id;
-                } else {
-                    $order->id_carrier = 0;
-                    $carrierId = 0;
-                }
+        $order->product_list = $this->context->cart->getProducts();
+        $order->recyclable = $this->context->cart->recyclable;
+        $order->gift = (int) $this->context->cart->gift;
+        $order->gift_message = $this->context->cart->gift_message;
+        $order->mobile_theme = $this->context->cart->mobile_theme;
+        $order->conversion_rate = $this->context->currency->conversion_rate;
+        $order->total_paid_real = 0;
+        $shippingMethod = $this->context->cookie->vf_shipping_method;
+        $delivery_option = explode('-', $shippingMethod);
+        $order->id_carrier =  str_replace(',', '', $delivery_option[1]);
 
-                $delivery_address = new Address();
-                $delivery_address->alias = 'My Address';
-                $delivery_address->id_country = $shippingAddress['country'];
-                $delivery_address->city = $shippingAddress['city'];
-                $delivery_address->company = $shippingAddress['company'];
-                $delivery_address->firstname = $shippingAddress['firstName'];
-                $delivery_address->lastname = $shippingAddress['lastName'];
-                $delivery_address->postcode = $shippingAddress['postcode'];
-                // $delivery_address->id_state = $shippingAddress['zoneId'];
-                $delivery_address->address1 = $shippingAddress['address1'];
-                $delivery_address->address2 = $shippingAddress['address2'];
+        $order->reference = $reference;
+        $order->secure_key = md5(uniqid(rand(), true));
 
-                $delivery_address->save();
+        $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
+        $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
+        $order->total_discounts_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS));
+        $order->total_discounts_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS));
+        $order->total_discounts = $order->total_discounts_tax_incl;
 
-                $invoice_address = new Address();
-                $invoice_address->alias = 'My Address';
-                $invoice_address->id_country = $paymentAddress['country'];
-                $invoice_address->city = $paymentAddress['city'];
-                $invoice_address->company = $paymentAddress['company'];
-                $invoice_address->firstname = $paymentAddress['firstName'];
-                $invoice_address->lastname = $paymentAddress['lastName'];
-                $invoice_address->postcode = $paymentAddress['postcode'];
-                $invoice_address->vat_number = $paymentAddress['inn'];
-                $invoice_address->address1 = $paymentAddress['address1'];
-                $invoice_address->address2 = $paymentAddress['address2'];
+        $order->total_wrapping_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_WRAPPING));
+        $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING));
+        $order->total_wrapping = $order->total_wrapping_tax_incl;
 
-                $invoice_address->save();
+        $order->total_paid_tax_excl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(false, Cart::BOTH), _PS_PRICE_COMPUTE_PRECISION_);
+        $order->total_paid_tax_incl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH), _PS_PRICE_COMPUTE_PRECISION_);
+        $order->total_paid = $order->total_paid_tax_incl;
+        $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
+        $order->round_type = Configuration::get('PS_ROUND_TYPE');
 
-                $order->id_address_delivery = $delivery_address->id;
-                $order->id_address_invoice = $invoice_address->id;
-                $order->id_customer = (int) $this->context->cart->id_customer;
-                $order->id_currency = $this->context->currency->id;
-                $order->id_lang = (int) $this->context->cart->id_lang;
-                $order->id_cart = (int) $this->context->cart->id;
-                $order->id_shop = (int) $this->context->shop->id;
-                $order->id_shop_group = (int) $this->context->shop->id_shop_group;
-                $order->payment = $paymentMethod['name'];
-                $order->module = "vuefront";
-                $order->product_list = $package['product_list'];
-                $order->recyclable = $this->context->cart->recyclable;
-                $order->gift = (int) $this->context->cart->gift;
-                $order->gift_message = $this->context->cart->gift_message;
-                $order->mobile_theme = $this->context->cart->mobile_theme;
-                $order->conversion_rate = $this->context->currency->conversion_rate;
-                $order->total_paid_real = 0;
+        $order_total = $order->total_paid;
 
-                $order->reference = $reference;
-                $order->secure_key = md5(uniqid(rand(), true));
+        $result = $order->add();
 
-                $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $carrierId);
-                $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS, $order->product_list, $carrierId);
-                $order->total_discounts_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS, $order->product_list, $carrierId));
-                $order->total_discounts_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS, $order->product_list, $carrierId));
-                $order->total_discounts = $order->total_discounts_tax_incl;
-
-                $order->total_shipping_tax_excl = (float) $this->context->cart->getPackageShippingCost($carrierId, false, null, $order->product_list);
-                $order->total_shipping_tax_incl = (float) $this->context->cart->getPackageShippingCost($carrierId, true, null, $order->product_list);
-                $order->total_shipping = $order->total_shipping_tax_incl;
-
-                if (null !== $carrier && Validate::isLoadedObject($carrier)) {
-                    $order->carrier_tax_rate = $carrier->getTaxesRate(new Address((int) $this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
-                }
-
-                $order->total_wrapping_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_WRAPPING, $order->product_list, $carrierId));
-                $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING, $order->product_list, $carrierId));
-                $order->total_wrapping = $order->total_wrapping_tax_incl;
-
-                $order->total_paid_tax_excl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $carrierId), _PS_PRICE_COMPUTE_PRECISION_);
-                $order->total_paid_tax_incl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $carrierId), _PS_PRICE_COMPUTE_PRECISION_);
-                $order->total_paid = $order->total_paid_tax_incl;
-                $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
-                $order->round_type = Configuration::get('PS_ROUND_TYPE');
-
-                $order_total = $order->total_paid;
-
-                $order->invoice_date = '0000-00-00 00:00:00';
-                $order->delivery_date = '0000-00-00 00:00:00';
-
-                $result = $order->add();
-
-
-                if (!$result) {
-                    throw new PrestaShopException('Can\'t save Order');
-                }
-                $order_detail = new OrderDetail(null, null, $this->context);
-
-                $order_detail->createList($order, $this->context->cart, Configuration::get('PS_OS_PREPARATION'), $order->product_list, 0, true, $package_list[$id_address][$id_package]['id_warehouse']);
-
-                $order_list[] = $order;
-                $order_detail_list[] = $order_detail;
-
-                $new_history = new OrderHistory();
-                $new_history->id_order = (int) $order->id;
-                $new_history->changeIdOrderState((int) Configuration::get('PS_OS_PREPARATION'), $order, true);
-
-
-                if (null !== $carrier) {
-                    $order_carrier = new OrderCarrier();
-                    $order_carrier->id_order = (int) $order->id;
-                    $order_carrier->id_carrier = $carrierId;
-                    $order_carrier->weight = (float) $order->getTotalWeight();
-                    $order_carrier->shipping_cost_tax_excl = (float) $order->total_shipping_tax_excl;
-                    $order_carrier->shipping_cost_tax_incl = (float) $order->total_shipping_tax_incl;
-                    $order_carrier->add();
-                }
-                $order_id = $order_id;
-            }
+        if (!$result) {
+            throw new PrestaShopException('Can\'t save Order');
         }
 
+        $order_detail = new OrderDetail(null, null, $this->context);
+
+        $order_detail->createList($order, $this->context->cart, Configuration::get('PS_OS_PREPARATION'), $order->product_list);
+
+        $order_list[] = $order;
+        $order_detail_list[] = $order_detail;
+
+        $new_history = new OrderHistory();
+        $new_history->id_order = (int) $order->id;
+        $new_history->changeIdOrderState((int) Configuration::get('PS_OS_PREPARATION'), $order, true);
+
         $response = $this->model_store_checkout->requestCheckout(
-            'mutation($paymentMethod: String, $shippingMethod: String, $total: Float, $callback: String) {
-                createOrder(paymentMethod: $paymentMethod, shippingMethod: $shippingMethod, total: $total, callback: $callback) {
+            'mutation($paymentMethod: String, $total: Float, $callback: String) {
+                createOrder(paymentMethod: $paymentMethod, total: $total, callback: $callback) {
                     url
                 }
             }',
             array(
                 'paymentMethod' => $paymentMethod['codename'],
-                'shippingMethod' => $shippingMethod['codename'],
-                'total' => floatval($order_total),
-                'callback' => Tools::getHttpHost(true).
-                __PS_BASE_URI__.'index.php?controller=callback&module=vuefront&fc=module',
-                // 'callback' => urldecode(add_query_arg(
-                //     array(
-                //         'order_id' => $order_id 
-                //     ), 
-                //     get_rest_url( null, '/vuefront/v1/callback')
-                // ))
+                'total' => floatval($order->getOrdersTotalPaid()),
+                'callback' => Tools::getHttpHost(true) .
+                    __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module'
             )
         );
 
         return array(
             'url' => $response['createOrder']['url'],
             'order' => array(
-                'id' => $order_id
+                'id' => $order->id
             )
         );
     }
@@ -474,7 +567,7 @@ class ResolverStoreCheckout extends Resolver
 
         $input = json_decode($rawInput, true);
 
-        if($input['status'] == 'COMPLETE') {
+        if ($input['status'] == 'COMPLETE') {
             $order = new Order($order_id);
             $new_history = new OrderHistory();
             $new_history->id_order = (int) $order->id;

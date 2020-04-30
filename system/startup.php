@@ -21,7 +21,7 @@ require_once(DIR_PLUGIN . 'system/engine/proxy.php');
 require_once(DIR_PLUGIN . 'system/vendor/autoload.php');
 require_once(DIR_PLUGIN . 'system/helper/MySafeException.php');
 
-function start($context)
+function start($context, $translator, $objectPresenter)
 {
     $registry = new Registry();
 
@@ -29,6 +29,10 @@ function start($context)
     $registry->set('load', $loader);
 
     $registry->set('context', $context);
+
+    $registry->set('translator', $translator);
+
+    $registry->set('objectPresenter', $objectPresenter);
 
     $registry->get('load')->resolver('startup/startup');
 }
