@@ -60,6 +60,14 @@ class ResolverStoreCategory extends Resolver
             $filter_data['filter_parent_id'] = $args['parent'];
         }
 
+        if ($args['top']) {
+            $filter_data['top'] = $args['top'];
+        }
+
+        if (!empty($args['search'])) {
+            $filter_data['filter_name'] = $args['search'];
+        }
+
         if ($args['size'] != -1) {
             $filter_data['start'] = ($args['page'] - 1) * $args['size'];
             $filter_data['limit'] = $args['size'];
@@ -118,6 +126,8 @@ class ResolverStoreCategory extends Resolver
 
         if ($category_info['keyword'] != '') {
             $result = '/' . $category_info['keyword'];
+            $this->load->model('common/seo');
+            $this->model_common_seo->addUrl($result, 'category', $category_info['id']);
         }
 
         return $result;

@@ -14,6 +14,55 @@ use PrestaShop\PrestaShop\Adapter\ServiceLocator;
 
 class ResolverCommonAccount extends Resolver
 {
+    public function customerList($args)
+    {
+        $this->load->model('common/customer');
+
+        $filter_data = array(
+            'offset' => ($args['page'] - 1) * $args['size'],
+            'number' => $args['size'],
+            'sort' => $args['sort'],
+            'order' => $args['order'],
+			'count_total' => true
+        );
+
+        if (!empty($args['search'])) {
+            $filter_data['search'] = $args['search'];
+        }
+
+
+		$results = $this->model_common_customer->getCustomers($filter_data);
+		$customer_total = $this->model_common_customer->getTotalCustomers($filter_data);
+
+        $customers = array();
+
+        foreach ($results as $result) {
+			$customers[] = $this->get($result['id_customer']);
+        }
+
+        return array(
+            'content' => $customers,
+            'first' => $args['page'] === 1,
+            'last' => $args['page'] === ceil($customer_total / $args['size']),
+            'number' => (int) $args['page'],
+            'numberOfElements' => count($customers),
+            'size' => (int) $args['size'],
+            'totalPages' => (int) ceil($customer_total / $args['size']),
+            'totalElements' => (int) $customer_total,
+        );
+    }
+
+    public function getCustomer($args) {
+        $this->load->model('common/customer');
+        $customer_info =  $this->get($args['id']);
+        return array(
+            'id'        => $customer_info['id'],
+            'firstName' => $customer_info['firstName'],
+            'lastName'  => $customer_info['lastName'],
+            'email'     => $customer_info['email'],
+        );
+    }
+
     public function login($args)
     {
         $this->load->model('common/customer');
@@ -42,6 +91,14 @@ class ResolverCommonAccount extends Resolver
         }
 
 
+        $this->load->model('common/vuefront');
+        $this->model_common_vuefront->pushEvent('login_customer', array(
+            'customer_id' => $customer->id,
+            'firstname' => $customer->firstname,
+            'lastname' => $customer->lastname,
+            'email' => $customer->email
+        ));
+
         return array(
             'token' => null,
             'customer' => $this->get($customer->id)
@@ -50,6 +107,13 @@ class ResolverCommonAccount extends Resolver
 
     public function logout()
     {
+        $this->load->model('common/vuefront');
+		$this->model_common_vuefront->pushEvent('logout_customer', array(
+			'customer_id' => $this->context->cookie->id_customer,
+			'firstname' => $this->context->customer->firstname,
+			'lastname' => $this->context->customer->lastname,
+			'email' => $this->context->customer->email
+		));
         $this->context->cookie->logout();
 
         return array(
@@ -79,7 +143,13 @@ class ResolverCommonAccount extends Resolver
         }
        
         $customer->save();
-
+        $this->load->model('common/vuefront');
+        $this->model_common_vuefront->pushEvent('create_customer', array(
+            'customer_id' => $customer->id,
+            'firstname' => $customer->firstname,
+            'lastname' => $customer->lastname,
+            'email' => $customer->email
+        ));
         return $this->get($customer->id);
     }
 

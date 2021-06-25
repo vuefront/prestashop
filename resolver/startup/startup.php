@@ -32,10 +32,22 @@ class ResolverStartupStartup extends Resolver
 
 
         $this->load->model('startup/startup');
+        $this->load->model('common/vuefront');
 
         try {
             $resolvers = $this->model_startup_startup->getResolvers();
-            $schema = BuildSchema::build(Tools::file_get_contents(DIR_PLUGIN . 'schema.graphql'));
+            
+            $files = [DIR_PLUGIN . 'schema.graphql'];
+            
+            if ($this->model_common_vuefront->checkAccess()) {
+                $files[] = DIR_PLUGIN . 'schemaAdmin.graphql';
+            }
+
+            for ($i=0; $i < count($files); $i++) { 
+                $files[$i] = Tools::file_get_contents($files[$i]);
+            }
+            $source = $this->model_common_vuefront->mergeSchemas($files);
+            $schema    = BuildSchema::build($source);
             $rawInput = Tools::file_get_contents('php://input');
             $input = json_decode($rawInput, true);
             $query = $input['query'];
@@ -46,6 +58,7 @@ class ResolverStartupStartup extends Resolver
 
             $variableValues = isset($input['variables']) ? $input['variables'] : null;
             $result = GraphQL::executeQuery($schema, $query, $resolvers, null, $variableValues);
+            header('Content-Type: application/json');
 
         } catch (\Exception $e) {
             $result = [

@@ -95,6 +95,7 @@ class ModelStoreProduct extends Model
     public function getProduct($product_id)
     {
         $product = new Product($product_id, true, $this->context->language->id, $this->context->shop->id);
+
         return $product;
     }
 
@@ -141,6 +142,9 @@ class ModelStoreProduct extends Model
         if (!empty($data['filter_special'])) {
             $sql->where('p.`on_sale` = 1');
         }
+        if (!empty($data['filter_manufacturer_id'])) {
+            $sql->where('p.`id_manufacturer` = \''.(int)$data['filter_manufacturer_id'].'\'');
+        }
 
         if (!empty($data['filter_search'])) {
             $sql->where("pl.`name` LIKE '%" .
@@ -179,6 +183,10 @@ class ModelStoreProduct extends Model
         }
         if (!empty($data['filter_product_ids'])) {
             $sql->where('p.`id_product` IN ' . "('" . implode("','", $data['filter_product_ids']) . "')");
+        }
+
+        if (!empty($data['filter_manufacturer_id'])) {
+            $sql->where('p.`id_manufacturer` = \''.(int)$data['filter_manufacturer_id'].'\'');
         }
 
         if (!empty($data['filter_special'])) {

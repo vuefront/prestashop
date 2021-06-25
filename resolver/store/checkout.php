@@ -452,7 +452,7 @@ class ResolverStoreCheckout extends Resolver
         }
 
         $paymentMethod = $this->context->cookie->vf_payment_method;
-
+        
         $response = $this->model_store_checkout->requestCheckout(
             'query($codename: String){
                 payment(codename: $codename) {
@@ -537,27 +537,39 @@ class ResolverStoreCheckout extends Resolver
         $new_history = new OrderHistory();
         $new_history->id_order = (int) $order->id;
         $new_history->changeIdOrderState((int) Configuration::get('PS_OS_PREPARATION'), $order, true);
-
-        $response = $this->model_store_checkout->requestCheckout(
-            'mutation($paymentMethod: String, $total: Float, $callback: String) {
-                createOrder(paymentMethod: $paymentMethod, total: $total, callback: $callback) {
+        if ($args['withPayment']) {
+            $customer = new Customer($order->id_customer);
+            $response = $this->model_store_checkout->requestCheckout(
+                'mutation($paymentMethod: String, $total: Float, $callback: String, $customerId: String, $customerEmail: String) {
+                createOrder(paymentMethod: $paymentMethod, total: $total, callback: $callback, customerId: $customerId, customerEmail: $customerEmail) {
                     url
                 }
             }',
-            array(
+                array(
                 'paymentMethod' => $paymentMethod['codename'],
                 'total' => floatval($order->getOrdersTotalPaid()),
+                'customerId' => $order->id_customer,
+                'customerEmail' => $customer->email,
                 'callback' => Tools::getHttpHost(true) .
                     __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module'
             )
-        );
-
-        return array(
+            );
+        } else {
+            $response = array(
+                'createOrder' => array(
+                    'url' => ''
+                )
+            );
+        }
+            return array(
             'url' => $response['createOrder']['url'],
+            'callback' => Tools::getHttpHost(true) .
+            __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module',
             'order' => array(
                 'id' => $order->id
             )
         );
+        
     }
 
     public function callback()

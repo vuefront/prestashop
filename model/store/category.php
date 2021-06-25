@@ -111,6 +111,9 @@ class ModelStoreCategory extends Model
         if ($parent_id) {
             $sql->where('c.`id_parent` = ' . (int)$parent_id);
         }
+        if (!empty($data['filter_name'])) {
+            $sql->where('cl.`name` LIKE \'%' . pSQL($data['filter_name']).'%\' OR cl.`description` LIKE \'%' . pSQL($data['filter_name']).'%\'');
+        }
 
         $sql->orderBy($sort . ' ' . $data['order']);
         if (!empty($data['limit']) && $data['limit'] != -1) {
@@ -145,6 +148,10 @@ class ModelStoreCategory extends Model
 
         if ($parent_id) {
             $sql->where('c.`id_parent` = ' . (int)$parent_id);
+        }
+
+        if (!empty($data['filter_name'])) {
+            $sql->where('cl.`name` LIKE \'%' . pSQL($data['filter_name']).'%\' OR cl.`description` LIKE \'%' . pSQL($data['filter_name']).'%\'');
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);

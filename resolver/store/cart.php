@@ -58,7 +58,13 @@ class ResolverStoreCart extends Resolver
         $this->context->cart->updateQty((int)($qty), (int)($args['id']), (int)($product_attribute_id), null, 'up');
 
         $this->context->cart->update();
-
+        $this->load->model('common/vuefront');
+        $this->load->model('store/cart');
+        $this->model_common_vuefront->pushEvent('update_cart', array(
+            'cart' => $this->model_store_cart->prepareCart(),
+            'customer_id' => $this->context->cookie->isLogged() ? $this->context->cookie->id_customer : '',
+            'guest' => false
+        ));
         return $this->get($args);
     }
 
@@ -89,6 +95,13 @@ class ResolverStoreCart extends Resolver
 
         $this->context->cart->update();
 
+        $this->load->model('common/vuefront');
+        $this->load->model('store/cart');
+        $this->model_common_vuefront->pushEvent('update_cart', array(
+            'cart' => $this->model_store_cart->prepareCart(),
+            'customer_id' => $this->context->cookie->isLogged() ? $this->context->cookie->id_customer : '',
+            'guest' => false
+        ));
 
         return $this->get($args);
     }
@@ -101,6 +114,14 @@ class ResolverStoreCart extends Resolver
         $this->context->cart->deleteProduct((int)($id), (int)($product_attribute_id), null);
 
         $this->context->cart->update();
+
+        $this->load->model('common/vuefront');
+        $this->load->model('store/cart');
+        $this->model_common_vuefront->pushEvent('update_cart', array(
+            'cart' => $this->model_store_cart->prepareCart(),
+            'customer_id' => $this->context->cookie->isLogged() ? $this->context->cookie->id_customer : '',
+            'guest' => false
+        ));
 
         return $this->get($args);
     }
@@ -115,6 +136,7 @@ class ResolverStoreCart extends Resolver
         $results = $this->context->cart->getProducts();
 
         foreach ($results as $value) {
+           
             $options = array();
 
             if (!empty($value['attributes'])) {

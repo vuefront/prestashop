@@ -81,6 +81,33 @@ class AdminVuefrontAjaxController extends ModuleAdminController
           );
     }
 
+    public function ajaxProcessVfAppsEdit()
+    {
+        $option = Configuration::get('vuefront-apps');
+        $setting = array();
+
+        try {
+            $setting = Tools::jsonDecode($option, true);
+        } catch(Exception $e) {
+
+        }
+        $app = Tools::jsonDecode(html_entity_decode($_POST['app'], ENT_QUOTES, 'UTF-8'), true);
+
+        foreach ($app as $key => $value) {
+            $setting[$_POST['key']][$key] = $value;
+        }
+
+        Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
+
+        die(
+            Tools::jsonEncode(
+                [
+                'success' => 'success'
+                ]
+            )
+          );
+    }
+
     public function ajaxProcessVfApps() {
         $option = Configuration::get('vuefront-apps');
 
@@ -237,6 +264,28 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
           rmdir($dir);
       }
   }
+
+  public function ajaxProcessVfSettings()
+    {
+        $result = Configuration::get('vuefront-settings');
+
+        if (!$result) {
+            $result = Tools::jsonEncode(array());
+        }
+
+        die($result);
+    }
+
+    public function ajaxProcessVfSettingsEdit()
+    {
+        $vfSetting = Tools::jsonDecode(html_entity_decode($_POST['setting'], ENT_QUOTES, 'UTF-8'), true);
+
+        Configuration::updateValue('vuefront-settings', Tools::jsonEncode($vfSetting), null,0,0);
+
+        die(
+            Tools::jsonEncode(['success' => 'success'])
+        );
+    }
 
   public function ajaxProcessVfInformation() {
       $extensions = [];

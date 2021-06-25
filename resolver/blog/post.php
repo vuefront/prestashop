@@ -36,6 +36,12 @@ class ResolverBlogPost extends Resolver
                 'title' => $post['title'],
                 'shortDescription' => $post['shortDescription'],
                 'description' => $post['description'],
+                'url' => function ($root, $args) use ($that) {
+                    return $that->url(array(
+                        'parent' => $root,
+                        'args' => $args,
+                    ));
+                },
                 'keyword' => $post['keyword'],
                 'image' => $post['image'],
                 'imageLazy' => $post['imageLazy'],
@@ -173,5 +179,24 @@ class ResolverBlogPost extends Resolver
         } else {
             return array();
         }
+    }
+
+    public function url($data)
+    {
+        $post_info = $data['parent'];
+        $result = $data['args']['url'];
+
+        $result = str_replace("_id", $post_info['id'], $result);
+        $result = str_replace("_name", $post_info['name'], $result);
+
+
+        if ($post_info['keyword']) {
+            $result = '/'.$post_info['keyword'];
+
+            $this->load->model('common/seo');
+            $this->model_common_seo->addUrl($result, 'blog-post', $post_info['id']);
+        }
+
+        return $result;
     }
 }

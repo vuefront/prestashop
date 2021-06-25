@@ -46,6 +46,14 @@ class Vuefront extends Module
      */
     public function install()
     {
+        Db::getInstance()->execute('CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'vuefront_url` (
+            `id_url` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `id` INT( 11 ) UNSIGNED NOT NULL,
+            `type` varchar(64) NOT NULL,
+            `url` varchar(255) NOT NULL,
+            PRIMARY KEY (`id_url`)
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8'); 
+
         return parent::install() &&
         $this->registerAdminTab() && $this->registerAdminAjaxTab();
     }

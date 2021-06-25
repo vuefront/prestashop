@@ -57,6 +57,10 @@ class ResolverStoreProduct extends Resolver
         );
 
         $link = str_replace($this->context->link->getPageLink(''), '', $link);
+
+        $this->load->model('common/vuefront');
+        $resultEvent = $this->model_common_vuefront->pushEvent("fetch_product",  array( "extra" => array(), "product_id" => $product->id));
+
         return array(
             'id'               => $product->id,
             'name'             => $product->name,
@@ -64,12 +68,20 @@ class ResolverStoreProduct extends Resolver
             'shortDescription' => $product->description_short,
             'price'            => $price,
             'special'          => $price != $special ? $special : '',
+            'extra'            => $resultEvent['extra'],
             'model'            => $product->reference,
             'image'            => $image,
             'imageBig'         => $image,
             'imageLazy'        => $imageLazy,
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
+            'manufacturerId' => $product->id_manufacturer,
+            'manufacturer' => function($root, $args) {
+                return $this->manufacturer(array(
+                    'parent' => $root,
+                    'args' => $args
+                ));
+            },
             'keyword'          => $link,
             'meta'             => array(
                 'title' => $product->meta_title,
@@ -105,15 +117,32 @@ class ResolverStoreProduct extends Resolver
                     'parent' => $root,
                     'args' => $args
                 ));
+            },
+            'url' => function($root, $args) {
+                return $this->url(array(
+                    'parent' => $root,
+                    'args' => $args
+                ));
             }
         );
     }
+
+    public function manufacturer($data)
+    {
+        $product_info = $data['parent'];
+        
+        return $this->load->resolver('store/manufacturer/get', array(
+            'id' => $product_info['manufacturerId']
+        ));
+    }
+
     public function getList($args)
     {
         $this->load->model('store/product');
         $filter_data = array(
             'sort'  => $args['sort'],
             'order' => $args['order'],
+            'filter_manufacturer_id' => $args['manufacturer_id'],
         );
 
         if ($args['size'] != '-1') {
@@ -201,6 +230,24 @@ class ResolverStoreProduct extends Resolver
         $result = array_filter($result, function ($value) use ($images) {
             return $value['id_image'] != $images['id_image'];
         });
+
+        return $result;
+    }
+
+    public function url($data)
+    {
+        $product_info = $data['parent'];
+        $result = $data['args']['url'];
+
+        $result = str_replace("_id", $product_info['id'], $result);
+        $result = str_replace("_name", $product_info['name'], $result);
+
+
+        if ($product_info['keyword']) {
+            $result = '/'.$product_info['keyword'];
+            $this->load->model('common/seo');
+            $this->model_common_seo->addUrl($result, 'product', $product_info['id']);
+        }
 
         return $result;
     }

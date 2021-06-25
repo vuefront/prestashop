@@ -25,6 +25,12 @@ class ResolverCommonPage extends Resolver
             'description' => $page_info['description'],
             'sort_order' => (int) $page_info['sort_order'],
             'keyword' => $page_info['keyword'],
+            'url' => function ($root, $args) {
+                return $this->load->resolver('common/page/url', array(
+                    'parent' => $root,
+                    'args' => $args
+                ));
+            },
             'meta' => array(
                 'title' => $page_info['meta']['title'],
                 'description' => $page_info['meta']['description'],
@@ -71,5 +77,21 @@ class ResolverCommonPage extends Resolver
             'totalPages' => (int) ceil($page_total / $args['size']),
             'totalElements' => (int) $page_total,
         );
+    }
+
+    public function url($data) {
+        $post_info = $data['parent'];
+        $result = $data['args']['url'];
+
+        $result = str_replace('_id', $post_info['id'], $result);
+        $result = str_replace('_name', $post_info['name'], $result);
+
+        if ($post_info['keyword']) {
+            $result = '/'.$post_info['keyword'];
+            $this->load->model('common/seo');
+            $this->model_common_seo->addUrl($result, 'page', $post_info['id']);
+        }
+
+        return $result;
     }
 }

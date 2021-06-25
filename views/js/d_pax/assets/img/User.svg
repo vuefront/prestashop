@@ -1,21 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="75px" height="75px" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 46 (44423) - http://www.bohemiancoding.com/sketch -->
-    <title>Profile_image/grey</title>
-    <desc>Created with Sketch.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="17.2" height="20.746" viewBox="0 0 17.2 20.746">
     <defs>
-        <circle id="path-1" cx="37.4324569" cy="37.4324569" r="37.4324569"></circle>
+        <style>
+            .cls-1{fill:none;stroke:#000;stroke-width:1.2px}
+        </style>
     </defs>
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Profile_image/grey">
-            <g id="Icon_ava">
-                <mask id="mask-2" fill="white">
-                    <use xlink:href="#path-1"></use>
-                </mask>
-                <use id="Oval" fill-opacity="0.4" fill="#DCDDE1" xlink:href="#path-1"></use>
-                <circle id="Oval" fill="#DCDDE1" mask="url(#mask-2)" cx="37.4832496" cy="76.6686428" r="28.6349349"></circle>
-                <circle id="Oval" fill="#DCDDE1" mask="url(#mask-2)" cx="37.2236611" cy="28.3753465" r="15.7348971"></circle>
-            </g>
-        </g>
+    <g id="Component_1" data-name="Component 1" transform="translate(-.301 -.316)">
+        <ellipse id="Ellipse_3" cx="4.149" cy="4.027" class="cls-1" data-name="Ellipse 3" rx="4.149" ry="4.027" transform="translate(5.049 .916)"/>
+        <path id="Path_232" d="M780.765 1348.46a5.871 5.871 0 0 1-4.778-.057c-3.312.737-5.73 2.219-5.73 4.949a8.386 8.386 0 0 0 .5 2.087s2.451 1.744 7.5 1.744 7.5-1.744 7.5-1.744a8.387 8.387 0 0 0 .5-2.087c-.001-2.664-2.304-4.099-5.492-4.892z" class="cls-1" data-name="Path 232" transform="translate(-769.355 -1336.721)"/>
     </g>
 </svg>
