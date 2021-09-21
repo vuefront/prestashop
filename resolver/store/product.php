@@ -76,8 +76,8 @@ class ResolverStoreProduct extends Resolver
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
             'manufacturerId' => $product->id_manufacturer,
-            'manufacturer' => function($root, $args) {
-                return $this->manufacturer(array(
+            'manufacturer' => function($root, $args) use ($that) {
+                return $that->manufacturer(array(
                     'parent' => $root,
                     'args' => $args
                 ));
@@ -118,8 +118,8 @@ class ResolverStoreProduct extends Resolver
                     'args' => $args
                 ));
             },
-            'url' => function($root, $args) {
-                return $this->url(array(
+            'url' => function($root, $args) use ($that) {
+                return $that->url(array(
                     'parent' => $root,
                     'args' => $args
                 ));

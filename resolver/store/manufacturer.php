@@ -24,14 +24,16 @@ class ResolverStoreManufacturer extends Resolver
             return array();
         }
 
+        $that = $this;
+
         return array(
             'id'          => $manufacturer_info['id'],
             'name'        => html_entity_decode($manufacturer_info['name'], ENT_QUOTES, 'UTF-8'),
             'image'       => $manufacturer_info['image'],
             'imageLazy'   => $manufacturer_info['imageLazy'],
             'imageBig'     => $manufacturer_info['imageBig'],
-            'url'         => function($root, $args) {
-                return $this->url(array(
+            'url'         => function($root, $args) use ($that) {
+                return $that->url(array(
                     'parent' => $root,
                     'args' => $args
                 ));

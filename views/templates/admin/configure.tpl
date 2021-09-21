@@ -15,8 +15,8 @@ jQuery(document).ready(function() {
     
     d_vuefront({
         selector: '.vuefront-app',
-        baseURL: '{$baseUrl}',
-        siteUrl: '{$siteUrl}',
+        baseURL: "{$baseUrl|escape:'htmlall':'UTF-8'}",
+        siteUrl: "{$siteUrl|escape:'htmlall':'UTF-8'}",
         tokenUrl: "token={$tokenVuefront|escape:'html':'UTF-8'}",
         apiURL: '',
         type: 'prestashop'

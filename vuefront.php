@@ -24,7 +24,7 @@ class Vuefront extends Module
     {
         $this->name = 'vuefront'; // internal identifier, unique and lowercase
         $this->tab = 'front_office_features'; // backend module coresponding category
-        $this->version = '2.0.0'; // version number for the module
+        $this->version = '2.1.0'; // version number for the module
         $this->author = 'VueFront'; // module author
         $this->need_instance = 0; // load the module when displaying the "Modules" page in backend
         $this->bootstrap = true;
@@ -85,7 +85,7 @@ class Vuefront extends Module
             )
         ));
 
-        $app = json_decode(file_get_contents(__DIR__ . '/views/js/d_vuefront/manifest.json'), true);
+        $app = json_decode(Tools::file_get_contents(__DIR__ . '/views/js/d_vuefront/manifest.json'), true);
         $current_chunk = $app['files'];
         while (!empty($current_chunk)) {
           foreach ($current_chunk['js'] as $value) {

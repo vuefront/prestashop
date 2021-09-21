@@ -22,7 +22,7 @@ class ResolverStoreCheckout extends Resolver
      */
     private $checkoutSession;
 
-    function __construct($registry)
+    public function __construct($registry)
     {
         parent::__construct($registry);
         $deliveryOptionsFinder = new DeliveryOptionsFinder(
@@ -64,7 +64,7 @@ class ResolverStoreCheckout extends Resolver
 
         $methods = array();
 
-        foreach ($response['payments'] as $key => $value) {
+        foreach ($response['payments'] as $value) {
             if ($value['status']) {
                 $methods[] = array(
                     'id' => $value['codename'],
@@ -473,7 +473,6 @@ class ResolverStoreCheckout extends Resolver
 
         if (empty($this->context->cart->getProducts())) {
             throw new Exception("Empty cart");
-            return;
         }
 
         $order = new Order();
@@ -519,7 +518,6 @@ class ResolverStoreCheckout extends Resolver
         $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
         $order->round_type = Configuration::get('PS_ROUND_TYPE');
 
-        $order_total = $order->total_paid;
 
         $result = $order->add();
 
@@ -530,9 +528,6 @@ class ResolverStoreCheckout extends Resolver
         $order_detail = new OrderDetail(null, null, $this->context);
 
         $order_detail->createList($order, $this->context->cart, Configuration::get('PS_OS_PREPARATION'), $order->product_list);
-
-        $order_list[] = $order;
-        $order_detail_list[] = $order_detail;
 
         $new_history = new OrderHistory();
         $new_history->id_order = (int) $order->id;
@@ -547,7 +542,7 @@ class ResolverStoreCheckout extends Resolver
             }',
                 array(
                 'paymentMethod' => $paymentMethod['codename'],
-                'total' => floatval($order->getOrdersTotalPaid()),
+                'total' => (float)$order->getOrdersTotalPaid(),
                 'customerId' => $order->id_customer,
                 'customerEmail' => $customer->email,
                 'callback' => Tools::getHttpHost(true) .
@@ -574,7 +569,7 @@ class ResolverStoreCheckout extends Resolver
 
     public function callback()
     {
-        $order_id = $_GET['order_id'];
+        $order_id = Tools::getValue('order_id');
         $rawInput = Tools::file_get_contents('php://input');
 
         $input = json_decode($rawInput, true);

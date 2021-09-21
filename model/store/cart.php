@@ -15,10 +15,10 @@ class ModelStoreCart extends Model {
                 $sql->where('pac.`id_product_attribute` = ' . (int) $value['id_product_attribute']);
 
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-                foreach ($result as $key => $attribute) {
+                foreach ($result as $attribute) {
                     $attribute = new Attribute($attribute['id_attribute']);
 
-                    $option_data[] = array(
+                    $options[] = array(
                         'option_id' => $attribute->id_attribute_group,
                         'option_value_id' => $attribute->id
                     );

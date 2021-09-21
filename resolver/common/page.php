@@ -17,7 +17,7 @@ class ResolverCommonPage extends Resolver
     {
         $this->load->model('common/page');
         $page_info = $this->model_common_page->getPage($args['id']);
-
+        $that = $this;
         return array(
             'id' => $page_info['id'],
             'name' => $page_info['title'],
@@ -25,8 +25,8 @@ class ResolverCommonPage extends Resolver
             'description' => $page_info['description'],
             'sort_order' => (int) $page_info['sort_order'],
             'keyword' => $page_info['keyword'],
-            'url' => function ($root, $args) {
-                return $this->load->resolver('common/page/url', array(
+            'url' => function ($root, $args) use ($that) {
+                return $that->load->resolver('common/page/url', array(
                     'parent' => $root,
                     'args' => $args
                 ));

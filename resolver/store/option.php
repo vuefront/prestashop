@@ -62,14 +62,14 @@ class ResolverStoreOption extends Resolver
             return array();
         }
 
-
+        $that = $this;
         return array(
             'id' => $option_info['id_attribute_group'],
             'name' => html_entity_decode($option_info['name'], ENT_QUOTES, 'UTF-8'),
             'type' => $option_info['group_type'],
             'sort_order' => $option_info['position'],
-            'values' => function($root, $args) {
-                return $this->getValues(array(
+            'values' => function($root, $args) use ($that) {
+                return $that->getValues(array(
                     'parent' => $root,
                     'args' => $args
                 ));
@@ -84,7 +84,7 @@ class ResolverStoreOption extends Resolver
 
         $option_values = $this->model_store_option->getOptionValues($data['parent']['id']);
 
-        foreach ($option_values as $key => $value) {
+        foreach ($option_values as $value) {
             $results[] = array(
                 'id' => $value['id_attribute'],
                 'name' => $value['name']

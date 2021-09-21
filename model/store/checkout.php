@@ -26,7 +26,7 @@ class ModelStoreCheckout extends Model {
 
         $result = false;
 
-        foreach ($setting as $key => $value) {
+        foreach ($setting as $value) {
             if($value['codename'] == $codename) {
                 $result = $value['jwt'];
             }

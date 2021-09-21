@@ -27,7 +27,7 @@ class AdminVuefrontAjaxController extends ModuleAdminController
                        )
                     ));
                 }
-                $content = file_get_contents(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt');
+                $content = Tools::file_get_contents(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt');
                 file_put_contents(_PS_ROOT_DIR_ . '/.htaccess', $content);
                 unlink(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt');
             }
@@ -46,7 +46,7 @@ class AdminVuefrontAjaxController extends ModuleAdminController
         } catch(Exception $e) {
 
         }
-        unset($setting[$_POST['key']]);
+        unset($setting[Tools::getValue('key')]);
         Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
     }
 
@@ -65,8 +65,8 @@ class AdminVuefrontAjaxController extends ModuleAdminController
         $d = new DateTime();
             
         $setting[] = array(
-            'codename' => $_POST['codename'],
-            'jwt' => $_POST['jwt'],
+            'codename' => Tools::getValue('codename'),
+            'jwt' => Tools::getValue('jwt'),
             'dateAdded' => $d->format('Y-m-d\TH:i:s.u')
         );
     
@@ -91,10 +91,10 @@ class AdminVuefrontAjaxController extends ModuleAdminController
         } catch(Exception $e) {
 
         }
-        $app = Tools::jsonDecode(html_entity_decode($_POST['app'], ENT_QUOTES, 'UTF-8'), true);
+        $app = Tools::jsonDecode(html_entity_decode(Tools::getValue('app'), ENT_QUOTES, 'UTF-8'), true);
 
         foreach ($app as $key => $value) {
-            $setting[$_POST['key']][$key] = $value;
+            $setting[Tools::getValue('key')][$key] = $value;
         }
 
         Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
@@ -211,7 +211,7 @@ RewriteCond %{QUERY_STRING} !.*(rest_route)
 RewriteCond %{DOCUMENT_ROOT}".$document_path."vuefront/$1.html !-f
 RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
 
-                $content = file_get_contents(_PS_ROOT_DIR_ . '/.htaccess');
+                $content = Tools::file_get_contents(_PS_ROOT_DIR_ . '/.htaccess');
 
                 file_put_contents(_PS_ROOT_DIR_ . '/modules/vuefront/.htaccess.txt', $content);
 
@@ -237,7 +237,7 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
     try {
       $tmpFile = tempnam(sys_get_temp_dir(), 'TMP_');
       rename($tmpFile, $tmpFile .= '.tar');
-      file_put_contents($tmpFile, file_get_contents($_POST['url']));
+      file_put_contents($tmpFile, Tools::file_get_contents($_POST['url']));
       $this->removeDir(_PS_ROOT_DIR_ . '/vuefront');
       $phar = new PharData($tmpFile);
       $phar->extractTo(_PS_ROOT_DIR_ . '/vuefront');
@@ -278,7 +278,7 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
 
     public function ajaxProcessVfSettingsEdit()
     {
-        $vfSetting = Tools::jsonDecode(html_entity_decode($_POST['setting'], ENT_QUOTES, 'UTF-8'), true);
+        $vfSetting = Tools::jsonDecode(html_entity_decode(Tools::getValue('setting'), ENT_QUOTES, 'UTF-8'), true);
 
         Configuration::updateValue('vuefront-settings', Tools::jsonEncode($vfSetting), null,0,0);
 
@@ -330,22 +330,22 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
       );
   }
 
-  public function ajaxProcessProxy()
-  {
-    $body = Tools::file_get_contents('php://input');;
-    if (!function_exists('getallheaders')) {
-      function getallheaders()
+  public function getallheaders()
       {
           $headers = [];
           foreach ($_SERVER as $name => $value) {
-              if (substr($name, 0, 5) == 'HTTP_') {
-                  $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+              if (Tools::substr($name, 0, 5) == 'HTTP_') {
+                  $headers[str_replace(' ', '-', ucwords(Tools::strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
               }
           }
           return $headers;
       }
-    }
-    $headers = getallheaders();
+
+  public function ajaxProcessProxy()
+  {
+    $body = Tools::file_get_contents('php://input');;
+
+    $headers = $this->getallheaders();
 
     $cHeaders = array('Content-Type: application/json');
 

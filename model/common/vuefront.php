@@ -108,7 +108,7 @@ class ModelCommonVuefront extends Model
     {
         $apps = $this->getAppsForEvent();
 
-        foreach ($apps as $key => $value) {
+        foreach ($apps as $value) {
             $output = $this->request($value['eventUrl'], [
                 'name' => $name,
                 'data' => $data,
