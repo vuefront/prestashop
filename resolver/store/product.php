@@ -59,7 +59,10 @@ class ResolverStoreProduct extends Resolver
         $link = str_replace($this->context->link->getPageLink(''), '', $link);
 
         $this->load->model('common/vuefront');
-        $resultEvent = $this->model_common_vuefront->pushEvent("fetch_product",  array( "extra" => array(), "product_id" => $product->id));
+        $resultEvent = $this->model_common_vuefront->pushEvent(
+            "fetch_product",
+            array("extra" => array(), "product_id" => $product->id)
+        );
 
         return array(
             'id'               => $product->id,
@@ -76,7 +79,7 @@ class ResolverStoreProduct extends Resolver
             'stock'            => $product->quantity > 0,
             'rating'           => (float)0,
             'manufacturerId' => $product->id_manufacturer,
-            'manufacturer' => function($root, $args) use ($that) {
+            'manufacturer' => function ($root, $args) use ($that) {
                 return $that->manufacturer(array(
                     'parent' => $root,
                     'args' => $args
@@ -118,7 +121,7 @@ class ResolverStoreProduct extends Resolver
                     'args' => $args
                 ));
             },
-            'url' => function($root, $args) use ($that) {
+            'url' => function ($root, $args) use ($that) {
                 return $that->url(array(
                     'parent' => $root,
                     'args' => $args

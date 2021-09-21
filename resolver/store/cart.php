@@ -136,7 +136,6 @@ class ResolverStoreCart extends Resolver
         $results = $this->context->cart->getProducts();
 
         foreach ($results as $value) {
-           
             $options = array();
 
             if (!empty($value['attributes'])) {

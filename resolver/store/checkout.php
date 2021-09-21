@@ -14,7 +14,6 @@
 use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
 
-
 class ResolverStoreCheckout extends Resolver
 {
     /**
@@ -240,7 +239,8 @@ class ResolverStoreCheckout extends Resolver
         return $fields;
     }
 
-    public function createOrder() {
+    public function createOrder()
+    {
         $vf_shipping_address = array();
 
         foreach ($this->shippingAddress() as $value) {
@@ -250,7 +250,7 @@ class ResolverStoreCheckout extends Resolver
 
         $delivery_address = new Address();
         $delivery_address->alias = 'My Address';
-        if(!empty(trim($vf_shipping_address['country']))) {
+        if (!empty(trim($vf_shipping_address['country']))) {
             $delivery_address->id_country = $vf_shipping_address['country'];
         } else {
             $delivery_address->id_country = 0;
@@ -277,7 +277,7 @@ class ResolverStoreCheckout extends Resolver
 
         $invoice_address = new Address();
         $invoice_address->alias = 'My Address';
-        if(!empty(trim($vf_payment_address['country']))) {
+        if (!empty(trim($vf_payment_address['country']))) {
             $invoice_address->id_country = $vf_payment_address['country'];
         } else {
             $invoice_address->id_country = 0;
@@ -300,7 +300,8 @@ class ResolverStoreCheckout extends Resolver
         return array('success'=> 'success');
     }
 
-    public function updateOrder($args) {
+    public function updateOrder($args)
+    {
         $vf_shipping_address_id = 0;
 
         if (isset($this->context->cookie->vf_shipping_address)) {
@@ -316,10 +317,9 @@ class ResolverStoreCheckout extends Resolver
         }
 
         $delivery_address = new Address($vf_shipping_address_id);
-        if(!empty(trim($vf_shipping_address['country']))) {
+        if (!empty(trim($vf_shipping_address['country']))) {
             $delivery_address->id_country = $vf_shipping_address['country'];
             $this->checkoutSession->setIdAddressDelivery($delivery_address->id);
-            
         } else {
             $delivery_address->id_country = 0;
         }
@@ -352,7 +352,7 @@ class ResolverStoreCheckout extends Resolver
 
         $invoice_address = new Address($vf_payment_address_id);
         $invoice_address->alias = 'My Address';
-        if(!empty(trim($vf_payment_address['country']))) {
+        if (!empty(trim($vf_payment_address['country']))) {
             $invoice_address->id_country = $vf_payment_address['country'];
             $this->checkoutSession->setIdAddressInvoice($invoice_address->id);
         } else {
@@ -384,7 +384,8 @@ class ResolverStoreCheckout extends Resolver
         );
     }
 
-    public function totals() {
+    public function totals()
+    {
         $totals = array();
 
         $cart_presenter = new CartPresenter();
@@ -403,7 +404,7 @@ class ResolverStoreCheckout extends Resolver
         $display_prices_tax_incl = (bool) (new TaxConfiguration())->includeTaxes();
         $tax_enabled = (bool) Configuration::get('PS_TAX');
 
-        if(!$display_prices_tax_incl && $tax_enabled) {
+        if (!$display_prices_tax_incl && $tax_enabled) {
             $totals[] = array(
                 'title' => $cart['totals']['total']['label'].' '.$cart['labels']['tax_short'],
                 'text' => $cart['totals']['total']['value']
@@ -415,7 +416,7 @@ class ResolverStoreCheckout extends Resolver
         } else {
             $suffix = '';
 
-            if($tax_enabled) {
+            if ($tax_enabled) {
                 $suffix = ' '.$cart['labels']['tax_short'];
             }
 
@@ -425,7 +426,7 @@ class ResolverStoreCheckout extends Resolver
             );
         }
 
-        if($cart['subtotals']['tax']) {
+        if ($cart['subtotals']['tax']) {
             $totals[] = array(
                 'title' => $cart['subtotals']['tax']['label'],
                 'text' => sprintf('%label%', $cart['subtotals']['tax']['label'])
@@ -504,7 +505,9 @@ class ResolverStoreCheckout extends Resolver
 
         $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
         $order->total_products_wt = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
-        $order->total_discounts_tax_excl = (float) abs($this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS));
+        $order->total_discounts_tax_excl = (float) abs(
+            $this->context->cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS)
+        );
         $order->total_discounts_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS));
         $order->total_discounts = $order->total_discounts_tax_incl;
 
@@ -512,8 +515,14 @@ class ResolverStoreCheckout extends Resolver
         $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING));
         $order->total_wrapping = $order->total_wrapping_tax_incl;
 
-        $order->total_paid_tax_excl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(false, Cart::BOTH), _PS_PRICE_COMPUTE_PRECISION_);
-        $order->total_paid_tax_incl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH), _PS_PRICE_COMPUTE_PRECISION_);
+        $order->total_paid_tax_excl = (float) Tools::ps_round(
+            (float)$this->context->cart->getOrderTotal(false, Cart::BOTH),
+            _PS_PRICE_COMPUTE_PRECISION_
+        );
+        $order->total_paid_tax_incl = (float) Tools::ps_round(
+            (float)$this->context->cart->getOrderTotal(true, Cart::BOTH),
+            _PS_PRICE_COMPUTE_PRECISION_
+        );
         $order->total_paid = $order->total_paid_tax_incl;
         $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
         $order->round_type = Configuration::get('PS_ROUND_TYPE');
@@ -527,7 +536,12 @@ class ResolverStoreCheckout extends Resolver
 
         $order_detail = new OrderDetail(null, null, $this->context);
 
-        $order_detail->createList($order, $this->context->cart, Configuration::get('PS_OS_PREPARATION'), $order->product_list);
+        $order_detail->createList(
+            $order,
+            $this->context->cart,
+            Configuration::get('PS_OS_PREPARATION'),
+            $order->product_list
+        );
 
         $new_history = new OrderHistory();
         $new_history->id_order = (int) $order->id;
@@ -535,19 +549,21 @@ class ResolverStoreCheckout extends Resolver
         if ($args['withPayment']) {
             $customer = new Customer($order->id_customer);
             $response = $this->model_store_checkout->requestCheckout(
-                'mutation($paymentMethod: String, $total: Float, $callback: String, $customerId: String, $customerEmail: String) {
-                createOrder(paymentMethod: $paymentMethod, total: $total, callback: $callback, customerId: $customerId, customerEmail: $customerEmail) {
-                    url
-                }
-            }',
+                'mutation($paymentMethod: String, $total: Float, $callback: String, $customerId: String,'
+                .' $customerEmail: String) {
+                    createOrder(paymentMethod: $paymentMethod, total: $total, callback: $callback,'
+                    .' customerId: $customerId, customerEmail: $customerEmail) {
+                        url
+                    }
+                }',
                 array(
-                'paymentMethod' => $paymentMethod['codename'],
-                'total' => (float)$order->getOrdersTotalPaid(),
-                'customerId' => $order->id_customer,
-                'customerEmail' => $customer->email,
-                'callback' => Tools::getHttpHost(true) .
-                    __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module'
-            )
+                    'paymentMethod' => $paymentMethod['codename'],
+                    'total' => (float)$order->getOrdersTotalPaid(),
+                    'customerId' => $order->id_customer,
+                    'customerEmail' => $customer->email,
+                    'callback' => Tools::getHttpHost(true) .
+                        __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module'
+                )
             );
         } else {
             $response = array(
@@ -556,7 +572,7 @@ class ResolverStoreCheckout extends Resolver
                 )
             );
         }
-            return array(
+        return array(
             'url' => $response['createOrder']['url'],
             'callback' => Tools::getHttpHost(true) .
             __PS_BASE_URI__ . 'index.php?controller=callback&module=vuefront&fc=module',
@@ -564,7 +580,6 @@ class ResolverStoreCheckout extends Resolver
                 'id' => $order->id
             )
         );
-        
     }
 
     public function callback()

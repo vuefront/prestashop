@@ -43,7 +43,7 @@ class ResolverStartupStartup extends Resolver
                 $files[] = DIR_PLUGIN . 'schemaAdmin.graphql';
             }
 
-            for ($i=0; $i < count($files); $i++) { 
+            for ($i=0; $i < count($files); $i++) {
                 $files[$i] = Tools::file_get_contents($files[$i]);
             }
             $source = $this->model_common_vuefront->mergeSchemas($files);
@@ -59,7 +59,6 @@ class ResolverStartupStartup extends Resolver
             $variableValues = isset($input['variables']) ? $input['variables'] : null;
             $result = GraphQL::executeQuery($schema, $query, $resolvers, null, $variableValues);
             header('Content-Type: application/json');
-
         } catch (\Exception $e) {
             $result = [
                 'error' => [

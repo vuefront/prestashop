@@ -26,7 +26,8 @@ class ResolverCommonHome extends Resolver
         );
     }
 
-    public function searchUrl($args) {
+    public function searchUrl($args)
+    {
         $this->load->model('common/seo');
 
         $result = $this->model_common_seo->searchKeyword($args['url']);
@@ -46,7 +47,7 @@ class ResolverCommonHome extends Resolver
     {
         $this->load->model('common/vuefront');
 
-        if (!$this->context->cookie->isLogged() ) {
+        if (!$this->context->cookie->isLogged()) {
             return;
         }
         $app_info = $this->model_common_vuefront->getApp($args['app']);

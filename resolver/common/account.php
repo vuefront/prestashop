@@ -23,7 +23,7 @@ class ResolverCommonAccount extends Resolver
             'number' => $args['size'],
             'sort' => $args['sort'],
             'order' => $args['order'],
-			'count_total' => true
+            'count_total' => true
         );
 
         if (!empty($args['search'])) {
@@ -31,13 +31,13 @@ class ResolverCommonAccount extends Resolver
         }
 
 
-		$results = $this->model_common_customer->getCustomers($filter_data);
-		$customer_total = $this->model_common_customer->getTotalCustomers($filter_data);
+        $results = $this->model_common_customer->getCustomers($filter_data);
+        $customer_total = $this->model_common_customer->getTotalCustomers($filter_data);
 
         $customers = array();
 
         foreach ($results as $result) {
-			$customers[] = $this->get($result['id_customer']);
+            $customers[] = $this->get($result['id_customer']);
         }
 
         return array(
@@ -52,7 +52,8 @@ class ResolverCommonAccount extends Resolver
         );
     }
 
-    public function getCustomer($args) {
+    public function getCustomer($args)
+    {
         $this->load->model('common/customer');
         $customer_info =  $this->get($args['id']);
         return array(
@@ -108,12 +109,12 @@ class ResolverCommonAccount extends Resolver
     public function logout()
     {
         $this->load->model('common/vuefront');
-		$this->model_common_vuefront->pushEvent('logout_customer', array(
-			'customer_id' => $this->context->cookie->id_customer,
-			'firstname' => $this->context->customer->firstname,
-			'lastname' => $this->context->customer->lastname,
-			'email' => $this->context->customer->email
-		));
+        $this->model_common_vuefront->pushEvent('logout_customer', array(
+            'customer_id' => $this->context->cookie->id_customer,
+            'firstname' => $this->context->customer->firstname,
+            'lastname' => $this->context->customer->lastname,
+            'email' => $this->context->customer->email
+        ));
         $this->context->cookie->logout();
 
         return array(

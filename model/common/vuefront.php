@@ -22,8 +22,7 @@ class ModelCommonVuefront extends Model
 
         try {
             $setting = Tools::jsonDecode($option, true);
-        } catch(Exception $e) {
-
+        } catch (Exception $e) {
         }
 
         $app = $this->getApp($name);
@@ -38,10 +37,11 @@ class ModelCommonVuefront extends Model
             $setting[] = $appSetting;
         }
 
-        Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null,0,0);
+        Configuration::updateValue('vuefront-apps', Tools::jsonEncode($setting), null, 0, 0);
     }
     
-    public function checkAccess() {
+    public function checkAccess()
+    {
 
         $option = Configuration::get('vuefront-settings');
 
@@ -49,8 +49,7 @@ class ModelCommonVuefront extends Model
 
         try {
             $setting = Tools::jsonDecode($option, true);
-        } catch(Exception $e) {
-
+        } catch (Exception $e) {
         }
 
         if (!Tools::getValue('accessKey')) {
@@ -59,7 +58,7 @@ class ModelCommonVuefront extends Model
 
         $result = false;
         foreach ($setting as $key => $value) {
-            if($key === 'accessKey' && Tools::getValue('accessKey') === $value) {
+            if ($key === 'accessKey' && Tools::getValue('accessKey') === $value) {
                 $result = true;
             }
         }
@@ -74,7 +73,7 @@ class ModelCommonVuefront extends Model
 
         try {
             $setting = Tools::jsonDecode($option, true);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
         }
         foreach ($setting as $value) {
             if ($value['codename'] == $name) {
@@ -85,14 +84,15 @@ class ModelCommonVuefront extends Model
         return false;
     }
 
-    public function getAppsForEvent() {
+    public function getAppsForEvent()
+    {
         $option = Configuration::get('vuefront-apps');
 
         $setting = array();
 
         try {
             $setting = Tools::jsonDecode($option, true);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
         }
         $result = [];
         foreach ($setting as $value) {
@@ -122,7 +122,8 @@ class ModelCommonVuefront extends Model
         return $data;
     }
 
-    public function request($url, $data, $token = false) {
+    public function request($url, $data, $token = false)
+    {
         $ch = curl_init();
         $headers = array();
 
@@ -151,7 +152,8 @@ class ModelCommonVuefront extends Model
     }
 
 
-    public function mergeSchemas($files) {
+    public function mergeSchemas($files)
+    {
         $rootQueryType = '';
         $types = '';
         $rootMutationType = '';
@@ -169,7 +171,8 @@ class ModelCommonVuefront extends Model
                 $types = $types.PHP_EOL.$typesMatched[1];
             }
         }
-
-        return "${types}".PHP_EOL."type RootQueryType {".PHP_EOL."${rootQueryType}".PHP_EOL."}".PHP_EOL."type RootMutationType {".PHP_EOL."${rootMutationType}".PHP_EOL."}";
+        return "${types}".PHP_EOL."type RootQueryType {".PHP_EOL."${rootQueryType}"
+            .PHP_EOL."}".PHP_EOL."type RootMutationType {".PHP_EOL."${rootMutationType}"
+            .PHP_EOL."}";
     }
 }

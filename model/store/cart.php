@@ -1,7 +1,9 @@
 <?php
 
-class ModelStoreCart extends Model {
-    public function prepareCart() {
+class ModelStoreCart extends Model
+{
+    public function prepareCart()
+    {
         $cart = array();
         $this->load->model('store/product');
         $cart['products'] = array();
@@ -37,9 +39,7 @@ class ModelStoreCart extends Model {
                 'total'    => Tools::displayPrice($value['total'])
             );
         }
-
         $cart['total'] = Tools::displayPrice($this->context->cart->getOrderTotal());
-
         return $cart;
     }
 }

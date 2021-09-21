@@ -32,7 +32,7 @@ class ResolverStoreManufacturer extends Resolver
             'image'       => $manufacturer_info['image'],
             'imageLazy'   => $manufacturer_info['imageLazy'],
             'imageBig'     => $manufacturer_info['imageBig'],
-            'url'         => function($root, $args) use ($that) {
+            'url'         => function ($root, $args) use ($that) {
                 return $that->url(array(
                     'parent' => $root,
                     'args' => $args

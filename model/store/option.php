@@ -12,7 +12,8 @@
 
 class ModelStoreOption extends Model
 {
-    public function getOptionValues($id) {
+    public function getOptionValues($id)
+    {
         $sql = new DbQuery();
         $sql->select('*');
         $sql->from('attribute', 'a');
@@ -27,7 +28,8 @@ class ModelStoreOption extends Model
         return $result;
     }
 
-    public function getOptions($data) {
+    public function getOptions($data)
+    {
         $sort = 'al.`name`';
         if ($data['sort'] == 'id') {
             $sort = 'a.`id_attribute_group`';
@@ -53,7 +55,8 @@ class ModelStoreOption extends Model
         return $result;
     }
 
-    public function getOption($id) {
+    public function getOption($id)
+    {
         $sql = new DbQuery();
         $sql->select('*');
         $sql->from('attribute_group', 'a');
@@ -67,7 +70,8 @@ class ModelStoreOption extends Model
         return !empty($result) ? $result[0]: null;
     }
 
-    public function getTotalOptions($data) {
+    public function getTotalOptions($data)
+    {
         $sql = new DbQuery();
         $sql->select('count(*)');
         $sql->from('attribute_group', 'a');
@@ -78,7 +82,6 @@ class ModelStoreOption extends Model
         if (!empty($data['filter_name'])) {
             $sql->where("al.`name` LIKE '%" . pSQL($data['filter_name']). "%'");
         }
-
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         return $result['count(*)'];

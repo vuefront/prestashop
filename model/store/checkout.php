@@ -12,32 +12,34 @@
  */
 
 
-class ModelStoreCheckout extends Model {
-    public function getJwt($codename) {
+class ModelStoreCheckout extends Model
+{
+    public function getJwt($codename)
+    {
         $option = Configuration::get('vuefront-apps');
 
         $setting = array();
 
         try {
             $setting = Tools::jsonDecode($option, true);
-        } catch(Exception $e) {
-
+        } catch (Exception $e) {
         }
 
         $result = false;
 
         foreach ($setting as $value) {
-            if($value['codename'] == $codename) {
+            if ($value['codename'] == $codename) {
                 $result = $value['jwt'];
             }
         }
 
         return $result;
     }
-    public function requestCheckout($query, $variables) {
+    public function requestCheckout($query, $variables)
+    {
         $jwt = $this->getJwt('vuefront-checkout-app');
         
-        $ch = curl_init();  
+        $ch = curl_init();
 
         $requestData = array(
             'operationName' => null,
@@ -50,14 +52,14 @@ class ModelStoreCheckout extends Model {
         $headr[] = 'Content-type: application/json';
         $headr[] = 'Authorization: '.$jwt;
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-        curl_setopt($ch, CURLOPT_HTTPHEADER,$headr);
-        curl_setopt($ch, CURLOPT_POST,true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,     json_encode($requestData, JSON_FORCE_OBJECT) ); 
-        // curl_setopt($ch, CURLOPT_URL, 'http://localhost:3005/graphql'); 
-        curl_setopt($ch, CURLOPT_URL, 'https://api.checkout.vuefront.com/graphql'); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headr);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData, JSON_FORCE_OBJECT));
+        // curl_setopt($ch, CURLOPT_URL, 'http://localhost:3005/graphql');
+        curl_setopt($ch, CURLOPT_URL, 'https://api.checkout.vuefront.com/graphql');
 
-        $result = curl_exec($ch); 
+        $result = curl_exec($ch);
 
         $result = json_decode($result, true);
 

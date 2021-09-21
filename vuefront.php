@@ -52,7 +52,7 @@ class Vuefront extends Module
             `type` varchar(64) NOT NULL,
             `url` varchar(255) NOT NULL,
             PRIMARY KEY (`id_url`)
-            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8'); 
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8');
 
         return parent::install() &&
         $this->registerAdminTab() && $this->registerAdminAjaxTab();
@@ -88,13 +88,18 @@ class Vuefront extends Module
         $app = json_decode(Tools::file_get_contents(__DIR__ . '/views/js/d_vuefront/manifest.json'), true);
         $current_chunk = $app['files'];
         while (!empty($current_chunk)) {
-          foreach ($current_chunk['js'] as $value) {
-            $this->context->controller->addJS($this->_path . 'views/js/d_vuefront/' . basename($value), false);
-          }
-          foreach ($current_chunk['css'] as $value) {
-                $this->context->controller->addCSS($this->_path . 'views/js/d_vuefront/' . basename($value));
-          }
-          $current_chunk = $current_chunk['next'];
+            foreach ($current_chunk['js'] as $value) {
+                $this->context->controller->addJS(
+                    $this->_path . 'views/js/d_vuefront/' . basename($value),
+                    false
+                );
+            }
+            foreach ($current_chunk['css'] as $value) {
+                $this->context->controller->addCSS(
+                    $this->_path . 'views/js/d_vuefront/' . basename($value)
+                );
+            }
+            $current_chunk = $current_chunk['next'];
         }
 
         $this->context->smarty->assign(array(
@@ -127,7 +132,7 @@ class Vuefront extends Module
         $tab->module = 'vuefront';
 
         foreach (Language::getLanguages(false) as $lang) {
-          $tab->name[$lang['id_lang']] = 'Vuefront';
+            $tab->name[$lang['id_lang']] = 'Vuefront';
         }
 
         $tab->id_parent = -1;

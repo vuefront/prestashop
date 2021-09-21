@@ -54,9 +54,18 @@ class ModelStoreManufacturer extends Model
             'id' => $manufacturer->id,
             'name' => $manufacturer->name,
             'description' => html_entity_decode($manufacturer->description, ENT_QUOTES, 'UTF-8'),
-            'image' => $this->context->link->getManufacturerImageLink($manufacturer->id, ImageType::getFormatedName("medium")),
-            'imageBig' => $this->context->link->getManufacturerImageLink($manufacturer->id, ImageType::getFormatedName("large")),
-            'imageLazy' => $this->context->link->getManufacturerImageLink($manufacturer->id, ImageType::getFormatedName("small")),
+            'image' => $this->context->link->getManufacturerImageLink(
+                $manufacturer->id,
+                ImageType::getFormatedName("medium")
+            ),
+            'imageBig' => $this->context->link->getManufacturerImageLink(
+                $manufacturer->id,
+                ImageType::getFormatedName("large")
+            ),
+            'imageLazy' => $this->context->link->getManufacturerImageLink(
+                $manufacturer->id,
+                ImageType::getFormatedName("small")
+            ),
             'keyword' => $url,
             'meta' => array(
                 'title' => $manufacturer->meta_title,

@@ -79,7 +79,8 @@ class ResolverCommonPage extends Resolver
         );
     }
 
-    public function url($data) {
+    public function url($data)
+    {
         $post_info = $data['parent'];
         $result = $data['args']['url'];
 

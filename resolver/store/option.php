@@ -19,7 +19,7 @@ class ResolverStoreOption extends Resolver
             'order' => $args['order']
         );
 
-        if($args['size'] != '-1') {
+        if ($args['size'] != '-1') {
             $filter_data['start'] = ($args['page'] - 1) * $args['size'];
             $filter_data['limit'] = $args['size'];
         }
@@ -34,7 +34,7 @@ class ResolverStoreOption extends Resolver
 
         if ($args['size'] == -1 && $option_total != 0) {
             $args['size'] = $option_total;
-        } else if($args['size'] == -1 && $option_total == 0) {
+        } elseif ($args['size'] == -1 && $option_total == 0) {
             $args['size'] = 1;
         }
         foreach ($results as $result) {
@@ -68,7 +68,7 @@ class ResolverStoreOption extends Resolver
             'name' => html_entity_decode($option_info['name'], ENT_QUOTES, 'UTF-8'),
             'type' => $option_info['group_type'],
             'sort_order' => $option_info['position'],
-            'values' => function($root, $args) use ($that) {
+            'values' => function ($root, $args) use ($that) {
                 return $that->getValues(array(
                     'parent' => $root,
                     'args' => $args
@@ -77,7 +77,8 @@ class ResolverStoreOption extends Resolver
         );
     }
 
-    public function getValues($data) {
+    public function getValues($data)
+    {
         $this->load->model('store/option');
         $this->load->model('store/product');
         $results = array();
