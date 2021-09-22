@@ -11,7 +11,6 @@
  * @version   0.1.0
  */
 
-
 class ModelStoreCheckout extends Model
 {
     public function getJwt($codename)

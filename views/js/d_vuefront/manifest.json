@@ -3,10 +3,10 @@
     "id": 179,
     "next": null,
     "js": [
-      "/modules/vuefront/views/js/d_vuefront/ef0ebb5731eb08a22a6e.bundle.js"
+      "/modules/vuefront/views/js/d_vuefront/70d488c9a1322ff6282c.bundle.js"
     ],
     "css": [
-      "/modules/vuefront/views/js/d_vuefront/main.ef0ebb5731eb08a22a6e.css"
+      "/modules/vuefront/views/js/d_vuefront/../../css/admin/main.70d488c9a1322ff6282c.css"
     ]
   }
 }

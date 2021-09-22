@@ -85,7 +85,13 @@ class Vuefront extends Module
             )
         ));
 
-        $app = json_decode(Tools::file_get_contents(__DIR__ . '/views/js/d_vuefront/manifest.json'), true);
+        $app = json_decode(
+            Tools::file_get_contents(
+                realpath(_PS_MODULE_DIR_.'vuefront/').'/'
+                . '/views/js/d_vuefront/manifest.json'
+            ),
+            true
+        );
         $current_chunk = $app['files'];
         while (!empty($current_chunk)) {
             foreach ($current_chunk['js'] as $value) {
@@ -96,7 +102,7 @@ class Vuefront extends Module
             }
             foreach ($current_chunk['css'] as $value) {
                 $this->context->controller->addCSS(
-                    $this->_path . 'views/js/d_vuefront/' . basename($value)
+                    $this->_path . 'views/css/admin/' . basename($value)
                 );
             }
             $current_chunk = $current_chunk['next'];

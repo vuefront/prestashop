@@ -4,6 +4,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const WebpackManifestGeneratorPlugin = require('./webpack-manifest')
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+
 const webpack = require('webpack')
 const url = require('url')
 const zlib = require('zlib')
@@ -12,6 +15,7 @@ const fs = require('fs')
 const paxConfig = require('./pax.config')
 require('dotenv').config()
 const polyfill =  !_.isUndefined(paxConfig.polyfill) ? paxConfig.polyfill : true
+
 
 const isWin = process.platform === "win32";
 
@@ -26,6 +30,7 @@ module.exports = (env, argv) => {
 
   const currentUrl = getCurrentUrl(config)
   const distRelativePath = getDistRelativePath()
+  const distAssetsRelativePath = getDistAssetsRelativePath()
 
   const rewriteUrl = url.parse(currentUrl)
   const proxyUrl = 'http://' + host + ':' + port + rewriteUrl.path
@@ -40,6 +45,7 @@ module.exports = (env, argv) => {
     : '/' + distRelativePath.replace(/\\/g, '/')
 
   const publicRelativePath = distRelativePath.replace(/\\/g, '/')
+  const publicAssetsRelativePath = distAssetsRelativePath.replace(/\\/g, '/')
   let rewriteUrls = {}
   rewriteUrls[currentUrl] = ''
   rewriteUrls['^' + rewriteUrl.path] = ''
@@ -175,7 +181,7 @@ module.exports = (env, argv) => {
       moduleTrace: true,
       errorDetails: true
     },
-    devtool: 'eval-source-map',
+    // devtool: 'eval-source-map',
     module: {
       rules: [
         {
@@ -261,8 +267,8 @@ module.exports = (env, argv) => {
                 esModule: false,
                 fallback: 'file-loader',
                 context: path.resolve(__dirname, './assets'),
-                outputPath: './',
-                publicPath: '../'+publicRelativePath,
+                outputPath: '../../img/admin',
+                publicPath: '../'+publicAssetsRelativePath,
                 name: '[path][name].[ext]'
               }
             }
@@ -281,8 +287,8 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: '[name].[fullhash].css',
-        chunkFilename: '[id].[fullhash].css',
+        filename: '../../css/admin/[name].[fullhash].css',
+        chunkFilename: '../../css/admin/[id].[fullhash].css',
         esModule: false
       }),
       new VueLoaderPlugin(),
@@ -307,7 +313,7 @@ module.exports = (env, argv) => {
           defaultVendors: {
             test: /[\\/]node_modules[\\/]/,
             priority: -10,
-            maxSize: 200000,
+            maxSize: 20000,
             name: 'vendor',
             // chunks: 'initial',
             enforce: true
@@ -356,6 +362,16 @@ const getCurrentUrl = config => {
 const getDistRelativePath = () => {
   const cDir = path.resolve(getRootDir(), './')
   const nDir = path.resolve(__dirname, `../${paxConfig.codename}/`)
+
+  if(isWin) {
+    return _.replace(nDir, cDir + '\\', '')
+  } else {
+    return _.replace(nDir, cDir + '/', '')
+  }
+}
+const getDistAssetsRelativePath = () => {
+  const cDir = path.resolve(getRootDir(), './')
+  const nDir = path.resolve(__dirname, `../../img/admin/`)
 
   if(isWin) {
     return _.replace(nDir, cDir + '\\', '')

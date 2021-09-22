@@ -238,7 +238,7 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
         try {
             $tmpFile = tempnam(sys_get_temp_dir(), 'TMP_');
             rename($tmpFile, $tmpFile .= '.tar');
-            file_put_contents($tmpFile, Tools::file_get_contents($_POST['url']));
+            file_put_contents($tmpFile, Tools::file_get_contents(Tools::getValue('url')));
             $this->removeDir(_PS_ROOT_DIR_ . '/vuefront');
             $phar = new PharData($tmpFile);
             $phar->extractTo(_PS_ROOT_DIR_ . '/vuefront');
@@ -341,7 +341,7 @@ RewriteRule ^([^?]*) vuefront/200.html [L,QSA]";
                     ' ',
                     '-',
                     ucwords(
-                        Tools::strtolower(str_replace('_', ' ', substr($name, 5)))
+                        Tools::strtolower(str_replace('_', ' ', Tools::substr($name, 5)))
                     )
                 )
                 ] = $value;

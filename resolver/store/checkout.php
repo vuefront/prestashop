@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 2019 (c) VueFront
  *
