@@ -1,29 +1,51 @@
 <template>
-  <div class="banned-page">
-    <div class="banned-page__banner">
-      <div class="banned-page__banner_image">
+  <div class="confirm-page">
+    <div class="confirm-page__banner">
+      <div class="confirm-page__banner_image">
         <img
-          :src="require('~/assets/img/banned-email.svg')"
+          :src="require('~/assets/img/confirm-email.svg')"
           alt=""
         >
       </div>
-      <div class="banned-page__banner_title">
+      <div class="confirm-page__banner_title">
         {{ $t('textTitle') }}
       </div>
-      <div class="banned-page__banner_description">
+      <div class="confirm-page__banner_description">
         {{ $t('textDescription') }}
       </div>
     </div>
     <div class="text-center">
-      <a
-        href="https://vuefront.com/help-center"
-        target="_blank"
-        class="btn btn-success"
-      >{{ $t('buttonUnban') }}</a>
+      <b-row
+        align-v="center"
+        align-h="center"
+      >
+        <b-col md="auto">
+          <b-button
+            :disabled="refreshLoading"
+            variant="success"
+            size="lg"
+            @click="handleRefresh"
+          >
+            <b-spinner
+              v-if="refreshLoading"
+              type="grow"
+            />
+            {{ $t('buttonRefresh') }}
+          </b-button>
+        </b-col>
+        <b-col md="auto">
+          <a
+            class="confirm-page__button_resend"
+            @click="handleResend"
+          >
+            {{ $t('buttonResend') }}
+          </a>
+        </b-col>
+      </b-row>
     </div>
     <div class="text-center">
       <a
-        class="banned-page__button_logout"
+        class="confirm-page__button_logout"
         @click="handleLogout"
       >
         {{ $t('buttonLogout') }}
@@ -34,8 +56,7 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
-  layout: 'auth',
-  middleware: ['banned'],
+  middleware: ['authenticated', 'notConfirmed'],
   data() {
     return {
       refreshLoading: false
@@ -49,14 +70,12 @@ export default {
   methods: {
     handleLogout() {
       this.$store.dispatch('auth/logout')
-      this.$router.push('/check')
+      this.$store.commit('auth/toggleShowLogin')
     },
     async handleRefresh() {
       this.refreshLoading = true
       await this.$store.dispatch('account/load')
-      if(this.account.banneded) {
-        this.$router.push('/')
-      }
+
       this.refreshLoading = false
     },
     async handleResend() {
@@ -67,15 +86,20 @@ export default {
 </script>
 <i18n locale="en">
 {
-  "textTitle": "Your account has been banned",
-  "textDescription": "Unfortunately, due to the current circumstances, we had to ban your account. This is not a permanent measure and you can dispute it via our support center. If you wish to learn more about your ban, click the button below.",
-  "buttonUnban": "Unban my account",
+  "textTitle": "Please, confirm your email.",
+  "textDescription": "Visit your email client and click the verification link. After return here and click refresh.",
+  "buttonRefresh": "Refresh",
+  "buttonResend": "Resend registration",
   "buttonLogout": "Try another email"
 }
 </i18n>
 <style lang="scss">
-  .banned-page {
-    margin-top: 60px;
+  .confirm-page {
+    border-radius: 3px;
+    border: 1px solid #d9d9d9;
+    background-color: #ffffff;
+    padding: 50px 55px;
+    margin-bottom: 60px;
     &__button_logout {
       display: block;
       cursor: pointer;
@@ -89,13 +113,24 @@ export default {
       letter-spacing: 0.18px;
       text-align: center;
     }
+    &__button_resend {
+      display: block;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.11;
+      letter-spacing: 0.18px;
+      text-align: center;
+    }
     &__banner {
-      background-color: #f9f9f9;
-      padding: 50px;
       margin-bottom: 40px;
       &_image {
         padding: 0 40px;
         margin-bottom: 20px;
+        text-align: center;
         img {
           width: 100;
           max-width: 100%;

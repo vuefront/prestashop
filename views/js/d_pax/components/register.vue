@@ -111,8 +111,6 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  layout: 'auth',
-  middleware: ['notAuthenticated', 'withEmail'],
   data() {
     return {
       form: {
@@ -132,7 +130,7 @@ export default {
   methods: {
     handleLogout() {
       this.$store.dispatch('auth/logout')
-      this.$router.push('/check')
+      this.$emit('check')
     },
     async onSubmit (valid) {
       if (!valid) {
@@ -143,9 +141,8 @@ export default {
       await this.$store.dispatch("auth/register", {email: this.form.email, password: this.form.password, firstName: this.form.firstName, lastName: this.form.lastName})
 
       if(!this.error) {
-        this.$router.push('/')
+        this.$store.commit('auth/toggleShowLogin')
       }
-
 
       this.loading = false
     }

@@ -67,7 +67,6 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
-  layout: 'auth',
   middleware: ['notAuthenticated', 'withEmail'],
   data() {
     return {
@@ -87,7 +86,8 @@ export default {
   methods: {
     handleLogout() {
       this.$store.dispatch('auth/logout')
-      this.$router.push('/check')
+      this.$emit('check')
+      // this.$router.push('/check')
     },
     async onSubmit (valid) {
       if (!valid) {
@@ -101,15 +101,19 @@ export default {
 
         await this.$store.dispatch('cms/list')
         const id = await this.$store.dispatch('cms/search')
-        if(id) {
-          await this.$store.dispatch('cms/load', {id})
+        if (this.$store.getters['cms/alien']) {
+          this.$store.commit('auth/toggleShowLogin')
+        } else {
+          if(id) {
+            await this.$store.dispatch('cms/load', {id})
+          }
+          this.$store.commit('auth/toggleShowLogin')
         }
-
-        this.$router.push('/')
       } else {
         if (this.error == 'email_banned') {
           this.$store.commit('account/setBanned', true)
-          this.$router.push('/banned')
+          this.$store.commit('setResponseError', false)
+          this.$store.commit('auth/toggleShowLogin')
         }
       }
 

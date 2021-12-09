@@ -50,8 +50,6 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  layout: 'auth',
-  middleware: ['notAuthenticated'],
   data() {
     return {
       form: {
@@ -67,6 +65,9 @@ export default {
       existingEmail: "auth/existingEmail"
     })
   },
+  mounted() {
+    this.$store.commit('account/setBanned', false)
+  },
   methods: {
     async onSubmit (valid) {
       if (!valid) {
@@ -77,9 +78,9 @@ export default {
       await this.$store.dispatch('auth/checkEmail', {email: this.form.email})
 
       if(!this.existingEmail) {
-        this.$router.push('/register')
+        this.$emit('register')
       } else {
-        this.$router.push('/login')
+        this.$emit('login')
       }
 
       this.loading = false

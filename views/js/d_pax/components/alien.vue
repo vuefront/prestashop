@@ -34,7 +34,6 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
-  layout: 'auth',
   middleware: ['alien'],
   data() {
     return {
@@ -49,13 +48,13 @@ export default {
   methods: {
     handleLogout() {
       this.$store.dispatch('auth/logout')
-      this.$router.push('/check')
+      this.$store.commit('auth/toggleShowLogin')
     },
     async handleRefresh() {
       this.refreshLoading = true
       await this.$store.dispatch('account/load')
       if(this.account.banneded) {
-        this.$router.push('/')
+        this.$store.commit('auth/toggleShowLogin')
       }
       this.refreshLoading = false
     },
@@ -75,7 +74,11 @@ export default {
 </i18n>
 <style lang="scss">
 .alient-page {
-  margin-top: 60px;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  padding: 50px 55px;
+  margin-bottom: 60px;
   &__button_logout {
     display: block;
     cursor: pointer;
@@ -90,8 +93,6 @@ export default {
     text-align: center;
   }
   &__banner {
-    background-color: #f9f9f9;
-    padding: 50px;
     margin-bottom: 40px;
     &_image {
       padding: 0 40px;

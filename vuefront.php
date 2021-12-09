@@ -24,7 +24,7 @@ class Vuefront extends Module
     {
         $this->name = 'vuefront'; // internal identifier, unique and lowercase
         $this->tab = 'front_office_features'; // backend module coresponding category
-        $this->version = '2.1.0'; // version number for the module
+        $this->version = '2.1.1'; // version number for the module
         $this->author = 'VueFront'; // module author
         $this->need_instance = 0; // load the module when displaying the "Modules" page in backend
         $this->bootstrap = true;
