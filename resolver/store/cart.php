@@ -267,4 +267,12 @@ class ResolverStoreCart extends Resolver
 
         return $idProductAttribute;
     }
+    public function clear($args)
+    {
+        $products = $this->context->cart->getProducts();
+        foreach ($products as $product) {
+            $this->context->cart->deleteProduct($product["id_product"]);
+        }
+        return $this->get($args);
+    }
 }

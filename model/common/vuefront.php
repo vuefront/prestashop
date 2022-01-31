@@ -42,7 +42,6 @@ class ModelCommonVuefront extends Model
     
     public function checkAccess()
     {
-
         $option = Configuration::get('vuefront-settings');
 
         $setting = array();

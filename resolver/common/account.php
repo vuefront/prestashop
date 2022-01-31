@@ -56,11 +56,13 @@ class ResolverCommonAccount extends Resolver
     {
         $this->load->model('common/customer');
         $customer_info =  $this->get($args['id']);
+
         return array(
             'id'        => $customer_info['id'],
             'firstName' => $customer_info['firstName'],
             'lastName'  => $customer_info['lastName'],
             'email'     => $customer_info['email'],
+            'phone'     => $customer_info['phone']
         );
     }
 
@@ -135,15 +137,21 @@ class ResolverCommonAccount extends Resolver
         $customer->firstname = $customerData['firstName'];
         $customer->lastname = $customerData['lastName'];
         $customer->email = $customerData['email'];
-        
+
         if (_PS_VERSION_ > '1.7.0.0') {
             $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
             $customer->passwd = $crypto->hash($customerData['password']);
         } else {
             $customer->passwd = Tools::encrypt($customerData['password']);
         }
-       
+
         $customer->save();
+
+        $this->load->model('common/customer');
+
+        $this->model_common_customer->updateCustomerData($customer->id, [
+            'phone' => $args['phone']
+        ]);
         $this->load->model('common/vuefront');
         $this->model_common_vuefront->pushEvent('create_customer', array(
             'customer_id' => $customer->id,
@@ -161,6 +169,12 @@ class ResolverCommonAccount extends Resolver
         $this->context->customer->email = $customerData['email'];
         $this->context->customer->firstname = $customerData['firstName'];
         $this->context->customer->lastname = $customerData['lastName'];
+
+        $this->load->model('common/customer');
+
+        $this->model_common_customer->updateCustomerData($this->context->cookie->id_customer, [
+            'phone' => $customerData['phone']
+        ]);
 
         if (!$this->context->customer->save()) {
             throw new Exception("Update failed");
@@ -190,18 +204,23 @@ class ResolverCommonAccount extends Resolver
     {
         $customer = new Customer($user_id);
 
+        $this->load->model('common/customer');
+
+        $customerData = $this->model_common_customer->getCustomerData($customer->id);
+
         return array(
             'id' => $customer->id,
             'email' => $customer->email,
             'firstName' => $customer->firstname,
-            'lastName' => $customer->lastname
+            'lastName' => $customer->lastname,
+            'phone'   => $customerData['phone']
         );
     }
 
     public function isLogged()
     {
         $customer = array();
-        
+
         if ($this->context->cookie->isLogged()) {
             $customer = $this->get($this->context->cookie->id_customer);
         }
@@ -241,7 +260,7 @@ class ResolverCommonAccount extends Resolver
     public function addressList()
     {
         $address = array();
-        
+
         $result = $this->context->customer->getAddresses($this->context->cookie->id_lang);
 
         foreach ($result as $value) {

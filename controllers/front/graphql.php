@@ -26,13 +26,16 @@ class VuefrontGraphqlModuleFrontController extends ModuleFrontController
         parent::setMedia();
         $this->context->controller->registerStylesheet(
             'modules-vuefront-front-css',
+            'modules/vuefront/views/css/graphiql.css',
             'modules/vuefront/views/css/index.css',
             array('media' => 'all', 'priority' => 200)
         );
 
         $this->context->controller->registerJavascript(
             'modules-vuefront-front-js',
-            'modules/vuefront/views/js/middleware.js',
+            'modules/vuefront/views/js/react.production.min.js',
+            'modules/vuefront/views/js/react-dom.production.min.js',
+            'modules/vuefront/views/js/graphiql.js',
             array('position' => 'head', 'priority' => 0)
         );
     }

@@ -54,6 +54,12 @@ class Vuefront extends Module
             PRIMARY KEY (`id_url`)
             ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8');
 
+        Db::getInstance()->execute('CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'vuefront_customer` (
+          `id_customer` int(11) unsigned NOT NULL,
+          `phone` varchar(255) NOT NULL,
+          PRIMARY KEY (`id_customer`)
+          ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8');
+
         return parent::install() &&
         $this->registerAdminTab() && $this->registerAdminAjaxTab();
     }
@@ -132,7 +138,6 @@ class Vuefront extends Module
 
     public function registerAdminAjaxTab()
     {
-
         $tab = new Tab();
         $tab->class_name = 'AdminVuefrontAjax';
         $tab->module = 'vuefront';

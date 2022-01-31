@@ -17,7 +17,6 @@ class ResolverStartupStartup extends Resolver
 {
     public function index()
     {
-
         if (Tools::getValue('cors')) {
             if (!empty($_SERVER['HTTP_ORIGIN'])) {
                 header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
@@ -26,7 +25,7 @@ class ResolverStartupStartup extends Resolver
             }
             header('Access-Control-Allow-Methods: POST, OPTIONS');
             header('Access-Control-Allow-Credentials: true');
-            header('Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With, ' .
+            header('Access-Control-Allow-Headers: Authorization, DNT,User-Agent,X-Requested-With, ' .
                 'If-Modified-Since,Cache-Control,Content-Type,Range,Token,token,Cookie,cookie,content-type');
         }
 

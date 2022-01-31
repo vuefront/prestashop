@@ -12,6 +12,36 @@
 
 class ModelCommonCustomer extends Model
 {
+    public function updateCustomerData($id, $data)
+    {
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('vuefront_customer', 'v');
+        $sql->where('id_customer = \''.$id.'\'');
+
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        if (!$result) {
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->execute('INSERT INTO `' . _DB_PREFIX_ . 'vuefront_customer` SET id_customer = \''.$id.'\', phone = \''.$data['phone'].'\'');
+        } else {
+            DB::getInstance(_PS_USE_SQL_SLAVE_)->execute('UPDATE `'._DB_PREFIX_.'vuefront_customer` SET phone = \''.$data['phone'].'\' WHERE id_customer = \''.$id.'\'');
+        }
+    }
+    public function getCustomerData($id)
+    {
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('vuefront_customer', 'v');
+        $sql->where('id_customer = \''.$id.'\'');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        if (!$result || count($result) === 0) {
+            return [
+                'phone' => ''
+            ];
+        }
+
+        return $result[0];
+    }
     public function getCustomers($data = array())
     {
         $sort = '';
