@@ -2,7 +2,7 @@
 <module>
     <name>vuefront</name>
     <displayName><![CDATA[VueFront]]></displayName>
-    <version><![CDATA[2.1.1]]></version>
+    <version><![CDATA[2.1.2]]></version>
     <description><![CDATA[CMS Connect App for PrestaShop]]></description>
     <author><![CDATA[VueFront]]></author>
     <tab><![CDATA[front_office_features]]></tab>

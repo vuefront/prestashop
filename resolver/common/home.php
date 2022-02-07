@@ -52,7 +52,11 @@ class ResolverCommonHome extends Resolver
 
             curl_setopt($ch, CURLOPT_HEADER, 0);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_URL, "https://vuefront2019.s3.amazonaws.com/sites/".$args['number']."/vuefront-app.tar");
+            curl_setopt(
+                $ch,
+                CURLOPT_URL,
+                "https://vuefront2019.s3.amazonaws.com/sites/".$args['number']."/vuefront-app.tar"
+            );
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 150);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
@@ -107,7 +111,7 @@ class ResolverCommonHome extends Resolver
         return $result['token'];
     }
 
-    public function version($args)
+    public function version()
     {
         return '1.0.0';
     }

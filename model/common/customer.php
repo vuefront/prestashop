@@ -21,9 +21,15 @@ class ModelCommonCustomer extends Model
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         if (!$result) {
-            Db::getInstance(_PS_USE_SQL_SLAVE_)->execute('INSERT INTO `' . _DB_PREFIX_ . 'vuefront_customer` SET id_customer = \''.$id.'\', phone = \''.$data['phone'].'\'');
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'vuefront_customer`
+                SET id_customer = \''.$id.'\', phone = \''.$data['phone'].'\''
+            );
         } else {
-            DB::getInstance(_PS_USE_SQL_SLAVE_)->execute('UPDATE `'._DB_PREFIX_.'vuefront_customer` SET phone = \''.$data['phone'].'\' WHERE id_customer = \''.$id.'\'');
+            DB::getInstance(_PS_USE_SQL_SLAVE_)->execute(
+                'UPDATE `'._DB_PREFIX_.'vuefront_customer`
+                SET phone = \''.$data['phone'].'\' WHERE id_customer = \''.$id.'\''
+            );
         }
     }
     public function getCustomerData($id)
